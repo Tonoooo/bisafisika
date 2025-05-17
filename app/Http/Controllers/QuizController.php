@@ -137,7 +137,7 @@ class QuizController extends Controller
     private function replacePlaceholders($content, $randomValues)
     {
         foreach ($randomValues as $placeholder => $value) {
-            $content = str_replace($placeholder, $value, $content);
+            $content = str_replace($placeholder, (string)$value, $content);
         }
 
         return $content;
@@ -161,12 +161,17 @@ class QuizController extends Controller
 
                     // Ganti placeholder %randomnumberX% atau variabel acak lainnya dengan nilai acak
                     foreach ($randomValues as $placeholder => $value) {
-                        $expression = str_replace($placeholder, $value, $expression);
+                        $expression = str_replace($placeholder, (string)$value, $expression);
+                        Log::info('After replacing placeholder', [
+                            'placeholder' => $placeholder,
+                            'value' => $value,
+                            'expression' => $expression,
+                        ]);
                     }
 
                     // Ganti placeholder %variabelhasilX% dengan hasil rumus sebelumnya
                     foreach ($rumusValues as $placeholder => $value) {
-                        $expression = str_replace($placeholder, $value, $expression);
+                        $expression = str_replace($placeholder, (string)$value, $expression);
                         Log::info('Replaced Variabelhasil in Rumus', [
                             'placeholder' => $placeholder,
                             'replaced_with' => $value,
@@ -177,6 +182,11 @@ class QuizController extends Controller
                     // Ganti konstanta
                     foreach ($this->constants as $constant => $value) {
                         $expression = str_replace($constant, (string)$value, $expression);
+                        Log::info('After replacing constant', [
+                            'constant' => $constant,
+                            'value' => $value,
+                            'expression' => $expression,
+                        ]);
                     }
 
                     // Perbaiki tanda kurung yang tidak seimbang
@@ -187,33 +197,40 @@ class QuizController extends Controller
                         Log::warning('Added missing closing parentheses', ['original' => $item[$key], 'corrected' => $expression]);
                     }
 
-                    // Ganti 10**x dengan pow(10, x) untuk mendukung eksponen negatif
-                    $expression = preg_replace('/10\*\*([-\d]+)/', 'pow(10, $1)', $expression);
+                    // Ganti ** dengan pow(base, exponent) untuk mendukung pangkat umum
+                    $expression = preg_replace('/([0-9\.]+)\*\*([-\d\.]+)/', 'pow($1, $2)', $expression);
+                    Log::info('After converting ** to pow', ['expression' => $expression]);
+
+                    // Ganti koma dengan titik untuk desimal
+                    $expression = str_replace(',', '.', $expression);
 
                     // Pastikan ekspresi valid sebelum evaluasi
                     $expression = str_replace('/100', '/100.0', $expression); // Hindari pembagian integer
                     $expression = preg_replace('/\s+/', '', $expression); // Hapus spasi
 
                     // Konversi fungsi trigonometri
-                    if (preg_match_all('/(sin|cos|tan)\s*\(\s*([0-9\.]+)\s*\)/', $expression, $matches, PREG_SET_ORDER)) {
+                    if (preg_match_all('/(sin|cos|tan|sqrt)\s*\(\s*([0-9\.]+)\s*\)/', $expression, $matches, PREG_SET_ORDER)) {
                         foreach ($matches as $match) {
                             $function = $match[1];
                             $arg = trim($match[2]);
-                            $radianArg = $arg * M_PI / 180;
-                            $trigResult = call_user_func($function, $radianArg);
+                            if ($function === 'sqrt') {
+                                $funcResult = sqrt($arg);
+                            } else {
+                                $radianArg = $arg * M_PI / 180;
+                                $funcResult = call_user_func($function, $radianArg);
+                            }
                             $oldPattern = "$function($arg)";
-                            $expression = str_replace($oldPattern, $trigResult, $expression);
-                            Log::info('Evaluated trigonometric function', [
+                            $expression = str_replace($oldPattern, $funcResult, $expression);
+                            Log::info('Evaluated function', [
                                 'function' => $function,
                                 'argument' => $arg,
-                                'radian' => $radianArg,
-                                'result' => $trigResult,
+                                'result' => $funcResult,
                                 'new_expression' => $expression,
                             ]);
                         }
                     }
 
-                    // Sanitasi string setelah konversi trigonometri
+                    // Sanitasi string setelah konversi fungsi
                     $expression = preg_replace('/[^0-9\.\+\-\*\/\(\)]/', '', $expression);
                     Log::info('Sanitized expression', ['expression' => $expression]);
 
@@ -312,13 +329,13 @@ class QuizController extends Controller
 
             // Ganti %randomnumberX% atau variabel acak lainnya
             foreach ($randomValues as $placeholder => $value) {
-                $content = str_replace($placeholder, $value, $content);
+                $content = str_replace($placeholder, (string)$value, $content);
             }
 
             // Ganti %variabelhasilX% satu per satu untuk menghindari penggantian berulang
             foreach ($rumusValues as $placeholder => $value) {
                 if (strpos($content, $placeholder) !== false) {
-                    $content = str_replace($placeholder, $value, $content);
+                    $content = str_replace($placeholder, (string)$value, $content);
                     Log::info('Replaced Variabelhasil in Answer', [
                         'placeholder' => $placeholder,
                         'replaced_with' => $value,

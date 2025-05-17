@@ -53,7 +53,7 @@ class QuestionResource extends Resource
                                             $component->addError('variabel', 'Placeholder harus unik di dalam soal ini.');
                                         }
                                     })
-                                    ->helperText('Misalnya: randomnumber1, randomnumber2')
+                                    ->helperText('Misalnya: panjang, gaya')
                                     ->placeholder('Masukkan placeholder, misalnya randomnumber1'),
 
                                 Forms\Components\Select::make('type')
@@ -70,7 +70,7 @@ class QuestionResource extends Resource
                                     ->numeric()
                                     ->default(1)
                                     ->required()
-                                    ->helperText('Masukkan nilai minimum tanpa batasan kecuali konteks soal.')
+                                    ->helperText('Gunakan titik(.) jika desimal')
                                     ->placeholder('1'),
 
                                 Forms\Components\Placeholder::make('to')
@@ -81,7 +81,6 @@ class QuestionResource extends Resource
                                     ->numeric()
                                     ->default(100)
                                     ->required()
-                                    ->helperText('Masukkan nilai maksimum tanpa batasan kecuali konteks soal.')
                                     ->placeholder('100')
                                     ->rules([
                                         fn ($get) => function ($attribute, $value, $fail) use ($get) {
@@ -143,14 +142,15 @@ class QuestionResource extends Resource
                                         $keys = array_keys($items);
                                         $index = array_search($uuid, $keys) !== false ? array_search($uuid, $keys) + 1 : 1;
                                         return "variabelhasil" . $index;
-                                    }),
+                                    })
+                                    ->helperText('Gunakan operator: +, -, *, /. Fungsi: cos(), sin(), tan() (dalam derajat), sqrt(). Pangkat: a**b (contoh: 2**3). Contoh: 2 * %tegangan% * cos(30) + sqrt(16)'),
 
                                 Forms\Components\Textarea::make('variabel_rumus')
                                     ->label('Rumus')
                                     ->rows(4)
                                     ->columnSpan(2)
                                     ->required()
-                                    ->helperText('Gunakan %randomnumberX% untuk variabel acak, dan %variabelhasilX% untuk hasil rumus sebelumnya.'),
+                                    ->helperText('Gunakan %randomnumberX% untuk variabel acak, dan %variabelhasilX% untuk hasil rumus sebelumnya. desimal gunakan titik(.)'),
                             ]),
                     ])
                     ->label('Variabel Rumus')
