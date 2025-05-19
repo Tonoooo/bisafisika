@@ -7,23 +7,30 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\LeaderboardResource\Pages;
 use App\Models\Leaderboard;
 use App\Models\School;
+use App\Models\User;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Facades\DB;
+// Impor Model
+use Illuminate\Database\Eloquent\Model; // Import class Model
+
 
 class LeaderboardResource extends Resource
 {
     protected static ?string $model = Leaderboard::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
+    protected static ?string $navigationLabel = 'Total Leaderboard';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                // Define the form schema if you want to allow editing leaderboard entries
+                //
             ]);
     }
 
@@ -31,6 +38,35 @@ class LeaderboardResource extends Resource
     {
         return false;
     }
+
+     // Ubah tipe hint parameter $record di sini
+     public static function canEdit(Model $record): bool
+    {
+        return false; // Tidak mengizinkan edit entri Leaderboard
+    }
+
+    // Ubah tipe hint parameter $record di sini
+    public static function canDelete(Model $record): bool
+    {
+        return false; // Tidak mengizinkan hapus entri Leaderboard
+    }
+
+    // Anda mungkin juga perlu mengubah ini jika diaktifkan dan error serupa muncul
+    // public static function canForceDelete(Model $record): bool
+    // {
+    //     return false;
+    // }
+
+    // public static function canRestore(Model $record): bool
+    // {
+    //     return false;
+    // }
+
+    // public static function canReplicate(Model $record): bool
+    // {
+    //     return false;
+    // }
+
 
     public static function table(Table $table): Table
     {
@@ -48,15 +84,12 @@ class LeaderboardResource extends Resource
                 Tables\Columns\TextColumn::make('user.class')
                     ->label('Kelas')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('quiz.title')
-                    ->label('Judul Quiz')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('score')
-                    ->label('Nilai')
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('total_score')
+                    ->label('Total Nilai')
+                    ->sortable('total_score')
+                    ->numeric(decimalPlaces: 2),
             ])
             ->filters([
-                // Filter berdasarkan Sekolah
                 Tables\Filters\SelectFilter::make('school')
                     ->label('Sekolah')
                     ->relationship('user.school', 'name')
@@ -64,7 +97,6 @@ class LeaderboardResource extends Resource
                     ->preload()
                     ->visible(fn () => auth()->user()->hasRole('super_admin')),
 
-                // Filter berdasarkan Tingkat
                 Tables\Filters\SelectFilter::make('level')
                     ->label('Tingkat')
                     ->options([
@@ -80,38 +112,15 @@ class LeaderboardResource extends Resource
                             })
                         );
                     })
-                    ->visible(fn () => auth()->user()->hasRole('super_admin')),
+                    ->visible(fn () => auth()->user()->hasRole('super_admin') || auth()->user()->hasRole('guru')),
 
-                // Filter berdasarkan Kelas
                 Tables\Filters\SelectFilter::make('class')
                     ->label('Kelas')
                     ->options([
-                        'A' => 'A',
-                        'B' => 'B',
-                        'C' => 'C',
-                        'D' => 'D',
-                        'E' => 'E',
-                        'F' => 'F',
-                        'G' => 'G',
-                        'H' => 'H',
-                        'I' => 'I',
-                        'J' => 'J',
-                        'K' => 'K',
-                        'L' => 'L',
-                        'M' => 'M',
-                        'N' => 'N',
-                        'O' => 'O',
-                        'P' => 'P',
-                        'Q' => 'Q',
-                        'R' => 'R',
-                        'S' => 'S',
-                        'T' => 'T',
-                        'U' => 'U',
-                        'V' => 'V',
-                        'W' => 'W',
-                        'X' => 'X',
-                        'Y' => 'Y',
-                        'Z' => 'Z',
+                        'A' => 'A', 'B' => 'B', 'C' => 'C', 'D' => 'D', 'E' => 'E', 'F' => 'F', 'G' => 'G', 'H' => 'H',
+                        'I' => 'I', 'J' => 'J', 'K' => 'K', 'L' => 'L', 'M' => 'M', 'N' => 'N', 'O' => 'O', 'P' => 'P',
+                        'Q' => 'Q', 'R' => 'R', 'S' => 'S', 'T' => 'T', 'U' => 'U', 'V' => 'V', 'W' => 'W', 'X' => 'X',
+                        'Y' => 'Y', 'Z' => 'Z',
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
@@ -121,9 +130,10 @@ class LeaderboardResource extends Resource
                             })
                         );
                     })
-                    ->visible(fn () => auth()->user()->hasRole('super_admin')),
+                    ->visible(fn () => auth()->user()->hasRole('super_admin') || auth()->user()->hasRole('guru')),
             ])
-            ->defaultSort('score', 'desc'); // Mengurutkan berdasarkan nilai tertinggi
+            ->defaultSort('total_score', 'desc')
+            ->searchable(false);
     }
 
     public static function getEloquentQuery(): Builder
@@ -131,23 +141,46 @@ class LeaderboardResource extends Resource
         $query = parent::getEloquentQuery();
         $user = auth()->user();
 
-        if ($user->hasRole('super_admin')) {
-            // Super admin bisa lihat semua data
-            return $query;
-        } elseif ($user->hasRole('guru')) {
-            // Guru hanya bisa lihat data dari sekolahnya
-            return $query->whereHas('user', function ($query) use ($user) {
-                $query->where('school_id', $user->school_id);
-            });
-        } else {
-            // Siswa hanya bisa lihat data dari sekolah, tingkat, dan kelasnya
-            return $query->whereHas('user', function ($query) use ($user) {
-                $query->where('school_id', $user->school_id)
-                    ->where('level', $user->level)
-                    ->where('class', $user->class);
+        // Buat subquery untuk mendapatkan total score dan row number
+        $subquery = DB::table('leaderboards')
+            ->select([
+                'leaderboards.id',
+                'leaderboards.user_id',
+                DB::raw('SUM(leaderboards.score) OVER (PARTITION BY leaderboards.user_id) as total_score'),
+                DB::raw('ROW_NUMBER() OVER (PARTITION BY leaderboards.user_id ORDER BY leaderboards.id) as rn')
+            ]);
+
+        // Query utama yang mengambil hanya baris pertama untuk setiap user
+        $query->fromSub($subquery, 'ranked_leaderboards')
+            ->select([
+                'ranked_leaderboards.id',
+                'ranked_leaderboards.user_id',
+                'ranked_leaderboards.total_score'
+            ])
+            ->where('ranked_leaderboards.rn', 1)
+            ->join('users', 'ranked_leaderboards.user_id', '=', 'users.id')
+            ->with(['user' => function($query) {
+                $query->with('school');
+            }]);
+
+        // Filter berdasarkan role
+        if ($user->hasRole('guru')) {
+            $query->where('users.school_id', $user->school_id);
+        } elseif ($user->hasRole('siswa')) {
+            // Modifikasi query untuk siswa
+            $query->where(function($q) use ($user) {
+                $q->where('users.id', $user->id)
+                  ->orWhere(function($q) use ($user) {
+                      $q->where('users.school_id', $user->school_id)
+                        ->where('users.level', $user->level)
+                        ->where('users.class', $user->class);
+                  });
             });
         }
+
+        return $query->orderByDesc('ranked_leaderboards.total_score');
     }
+
 
     public static function getRelations(): array
     {

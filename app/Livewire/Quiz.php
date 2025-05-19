@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\UserAnswer;
 use App\Models\UserQuiz;
+use App\Models\Leaderboard;
 use Livewire\Component;
 
 class Quiz extends Component
@@ -44,21 +45,45 @@ class Quiz extends Component
 
     public function submitQuiz()
     {
-        foreach ($this->answers as $userQuestionId => $answerContent) {
-            $userQuestion = $this->questions->find($userQuestionId);
-            $isCorrect = in_array($answerContent, array_column($userQuestion->question->answers, 'content')) &&
-                         array_column($userQuestion->question->answers, 'is_correct')[array_search($answerContent, array_column($userQuestion->question->answers, 'content'))];
+        try {
+            
+            $totalScore = 0;
+            $totalQuestions = count($this->questions);
+            
+            // Get UserQuiz data
+            $userQuiz = UserQuiz::findOrFail($this->userQuizId);
+            
+            foreach ($this->answers as $userQuestionId => $answerContent) {
+                $userQuestion = $this->questions->find($userQuestionId);
+                $isCorrect = in_array($answerContent, array_column($userQuestion->question->answers, 'content')) &&
+                             array_column($userQuestion->question->answers, 'is_correct')[array_search($answerContent, array_column($userQuestion->question->answers, 'content'))];
 
-            UserAnswer::create([
-                'user_question_id' => $userQuestionId,
-                'answer_content' => $answerContent,
-                'is_correct' => $isCorrect,
+                UserAnswer::create([
+                    'user_question_id' => $userQuestionId,
+                    'answer_content' => $answerContent,
+                    'is_correct' => $isCorrect,
+                ]);
+
+                if ($isCorrect) {
+                    $totalScore++;
+                }
+            }
+
+            // Hitung score dalam persentase
+            $finalScore = ($totalScore / $totalQuestions) * 100;
+
+            // Simpan ke leaderboard
+            $leaderboard = Leaderboard::create([
+                'user_id' => auth()->id(),
+                'quiz_id' => $userQuiz->quiz_id,
+                'score' => $finalScore
             ]);
+            
+
+            return redirect()->route('quiz.results', $this->userQuizId);
+        } catch (\Exception $e) {
+            throw $e;
         }
-
-        // Update the leaderboard logic here
-
-        return redirect()->route('quiz.results', $this->userQuizId);
     }
 
     public function render()

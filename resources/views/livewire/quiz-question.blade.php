@@ -13,7 +13,11 @@
                 @foreach(json_decode($question->answers, true) as $answerOption)
                     <div class="mb-2">
                         <label class="flex items-center">
-                            <input type="radio" wire:model="answer" value="{{ $answerOption['content'] }}" class="text-blue-600 form-radio">
+                            <input type="radio" 
+                                   name="answer_{{ $question->id }}" 
+                                   wire:model="answer" 
+                                   value="{{ $answerOption['content'] }}" 
+                                   class="text-blue-600 form-radio">
                             <span class="ml-2 text-gray-700">
                                 {!! '$$' . $answerOption['content'] . '$$' !!}
                             </span>

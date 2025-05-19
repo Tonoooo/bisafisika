@@ -7,6 +7,7 @@ namespace App\Livewire;
 use App\Models\UserAnswer;
 use App\Models\UserQuiz;
 use Livewire\Component;
+use Illuminate\Support\Facades\Log;
 
 class QuizQuestion extends Component
 {
@@ -41,21 +42,26 @@ class QuizQuestion extends Component
 
     public function submitAnswer()
     {
+        if (empty($this->answer)) {
+            session()->flash('error', 'Silakan pilih satu jawaban.');
+            return;
+        }
+
         // Decode the JSON string to an array
         $answers = json_decode($this->question->answers, true);
 
         // Ensure $answers is an array before proceeding
-        if (! is_array($answers)) {
-            // Handle the error or set $answers to an empty array
-            $answers = [];
-            Log::error('Failed to decode JSON answers in question ID: '.$this->question->id);
+        if (!is_array($answers)) {
+            Log::error('Failed to decode JSON answers in question ID: ' . $this->question->id);
+            session()->flash('error', 'Terjadi kesalahan dalam memproses jawaban.');
+            return;
         }
 
-        $selectedAnswer = $this->answer;
+        $selectedAnswer = trim($this->answer);
         $isCorrect = false;
 
         foreach ($answers as $answer) {
-            if (trim($answer['content']) === trim($selectedAnswer)) {
+            if (trim($answer['content']) === $selectedAnswer) {
                 $isCorrect = $answer['is_correct'];
                 break;
             }
@@ -63,14 +69,13 @@ class QuizQuestion extends Component
 
         UserAnswer::updateOrCreate(
             ['user_question_id' => $this->question->id],
-            ['answer_content' => $this->answer, 'is_correct' => $isCorrect]
+            ['answer_content' => $selectedAnswer, 'is_correct' => $isCorrect]
         );
 
         if ($this->questionIndex + 1 < $this->totalQuestions) {
             return redirect()->route('quiz.question', ['userQuizId' => $this->userQuizId, 'questionIndex' => $this->questionIndex + 1]);
         } else {
             $this->question->userQuiz->update(['is_completed' => true]);
-
             return redirect()->route('quiz.results', $this->userQuizId);
         }
     }
