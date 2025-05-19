@@ -11,6 +11,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
+
 class QuizResource extends Resource
 {
     protected static ?string $model = Quiz::class;
@@ -29,13 +30,14 @@ class QuizResource extends Resource
                     ->required(),
                 Forms\Components\TextInput::make('time_limit')
                     ->numeric()
+                    ->helpertext('menit')
                     ->required(),
                 Forms\Components\TextInput::make('attempt_limit')
                     ->numeric()
                     ->required(),
-                Forms\Components\CheckboxList::make('questions')
-                    ->relationship('questions', 'content')
-                    ->bulkToggleable(),
+                // Forms\Components\CheckboxList::make('questions')
+                //     ->relationship('questions', 'content')
+                //     ->bulkToggleable(),
                 Forms\Components\Select::make('questions')
                     ->label('Questions')
                     ->multiple()

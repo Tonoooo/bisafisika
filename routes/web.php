@@ -1,9 +1,20 @@
 <?php
 
 use App\Http\Controllers\QuizController;
+use App\Http\Controllers\RegisterController;
 use App\Livewire\QuizList;
+use App\Livewire\RegisterUser;
 use Illuminate\Support\Facades\Route;
 
+// Rute publik untuk registrasi
+//Route::get('/register', RegisterUser::class)->name('register');
+
+// Rute untuk halaman "Tunggu Verifikasi"
+Route::get('/teacher/waiting', function () {
+    return view('livewire.waiting', [], ['layout' => 'layouts.guest']);
+})->name('teacher.waiting')->middleware('auth');
+
+// Rute yang memerlukan autentikasi
 Route::middleware(['auth'])->group(function () {
     Route::get('/quizzes', QuizList::class)->name('quiz.list');
     Route::get('/quiz/{quizId}/start', [QuizController::class, 'startQuiz'])->name('quiz.start');
@@ -16,8 +27,8 @@ Route::get('/', function () {
     return redirect('/admin');
 });
 
-// // Protect admin routes with custom middleware
-// Route::middleware(['auth', 'checkadmin'])->prefix('admin')->group(function () {
-//     // Filament's internal routes for admin panel, including restricted areas like Roles.
-//     // Filament registers these automatically, so you don't need to add anything here manually.
-// });
+Route::get('/register', [RegisterController::class, 'showForm'])->name('register');
+Route::get('/register/student', [RegisterController::class, 'showStudentForm'])->name('register.student');
+Route::get('/register/teacher', [RegisterController::class, 'showTeacherForm'])->name('register.teacher');
+Route::get('/register/lecturer', [RegisterController::class, 'showLecturerForm'])->name('register.lecturer');
+Route::post('/register', [RegisterController::class, 'register'])->name('register.submit');

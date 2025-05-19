@@ -1,50 +1,42 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Resources\BabResource\RelationManagers;
 
-use App\Filament\Resources\QuestionResource\Pages;
-use App\Filament\Resources\QuestionResource\RelationManagers;
-use App\Models\Question;
 use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Resources\Resource;
+use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+
+// Pastikan mengimpor komponen Filament yang dibutuhkan
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Select; // Jika Anda butuh Select di Relation Manager Form
 use Illuminate\Support\Facades\Log;
-use App\Traits\HasRepeaterIndex;
-use App\Models\Bab;
-use Filament\Forms\Components\Select;
+// use App\Traits\HasRepeaterIndex; // Jika trait ini relevan di sini
 
-class QuestionResource extends Resource
+class QuestionsRelationManager extends RelationManager
 {
-    use HasRepeaterIndex;
+    protected static string $relationship = 'questions'; // Nama relasi di model Bab
 
-    protected static ?string $model = Question::class;
-
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?string $navigationGroup = 'Quiz Management';
-
-    public static function form(Form $form): Form
+    public function form(Form $form): Form
     {
         return $form
             ->schema([
-                Select::make('bab_id')
-                    ->label('Bab')
-                    ->relationship('bab', 'name')
-                    ->searchable()
-                    ->preload()
-                    ->createOptionForm([
-                        Forms\Components\TextInput::make('name')
-                            ->required()
-                            ->maxLength(255),
-                    ])
-                    ->nullable(),
-
-                Forms\Components\Repeater::make('random_variables')
+                // Salin field dari form QuestionResource di sini
+                // Hilangkan field 'bab_id' karena kita sudah ada di dalam Bab
+                Repeater::make('random_variables')
                     ->schema([
-                        Forms\Components\Grid::make(5)
+                        Grid::make(5)
                             ->schema([
-                                Forms\Components\TextInput::make('variabel')
+                                TextInput::make('variabel')
                                     ->label('Placeholder')
                                     ->default(function ($get, $set, $state, $component) {
                                         $statePath = $component->getStatePath();
@@ -72,7 +64,7 @@ class QuestionResource extends Resource
                                     ->helperText('Misalnya: panjang, gaya')
                                     ->placeholder('Masukkan placeholder, misalnya randomnumber1'),
 
-                                Forms\Components\Select::make('type')
+                                Select::make('type')
                                     ->label('Tipe Bilangan')
                                     ->options([
                                         'integer' => 'Bilangan Bulat',
@@ -81,7 +73,7 @@ class QuestionResource extends Resource
                                     ->default('integer')
                                     ->required(),
 
-                                Forms\Components\TextInput::make('min_value')
+                                TextInput::make('min_value')
                                     ->label('Nilai Minimum')
                                     ->numeric()
                                     ->default(1)
@@ -89,10 +81,10 @@ class QuestionResource extends Resource
                                     ->helperText('Gunakan titik(.) jika desimal')
                                     ->placeholder('1'),
 
-                                Forms\Components\Placeholder::make('to')
+                                Placeholder::make('to')
                                     ->content('hingga'),
 
-                                Forms\Components\TextInput::make('max_value')
+                                TextInput::make('max_value')
                                     ->label('Nilai Maksimum')
                                     ->numeric()
                                     ->default(100)
@@ -117,37 +109,25 @@ class QuestionResource extends Resource
                     ->reorderable(false)
                     ->required()
                     ->rules(['required', 'array', 'min:1'])
-                    ->columnSpanFull()
-                    ->afterStateHydrated(function ($component, $state, $record) {
-                        Log::info('Random Variables After State Hydrated', [
-                            'state' => $state,
-                            'record' => $record ? $record->toArray() : null,
-                        ]);
+                    ->columnSpanFull(),
+                    // ->afterStateHydrated(function ($component, $state, $record) {
+                    //     // Logika hydrating jika diperlukan
+                    // })
+                    // ->afterStateUpdated(function ($state) {
+                    //     // Logika after update jika diperlukan
+                    // }),
 
-                        if (is_null($state) && $record) {
-                            $randomVariables = $record->random_variables;
-                            Log::info('Hydrating Random Variables from Accessor', ['random_variables' => $randomVariables]);
-                            $component->state($randomVariables);
-                        }
-                    })
-                    ->afterStateUpdated(function ($state) {
-                        Log::info('Random Variables State Updated', ['state' => $state]);
-                        if (empty($state)) {
-                            Log::warning('Random Variables is Empty on Update');
-                        }
-                    }),
-
-                Forms\Components\Textarea::make('content')
+                Textarea::make('content')
                     ->label('Question Content')
                     ->required()
                     ->columnSpanFull()
                     ->helperText('Use %randomnumber% as a placeholder for random numbers.'),
 
-                Forms\Components\Repeater::make('rumus')
+                Repeater::make('rumus')
                     ->schema([
-                        Forms\Components\Grid::make(3)
+                        Grid::make(3)
                             ->schema([
-                                Forms\Components\Placeholder::make('nama variabel hasil')
+                                Placeholder::make('nama variabel hasil')
                                     ->content(function ($get, $set, $state, $component) {
                                         $statePath = $component->getStatePath();
                                         $items = $get('../../rumus') ?? [];
@@ -161,7 +141,7 @@ class QuestionResource extends Resource
                                     })
                                     ->helperText('Gunakan operator: +, -, *, /. Fungsi: cos(), sin(), tan() (dalam derajat), sqrt(). Pangkat: a**b (contoh: 2**3). Contoh: 2 * %tegangan% * cos(30) + sqrt(16)'),
 
-                                Forms\Components\Textarea::make('variabel_rumus')
+                                Textarea::make('variabel_rumus')
                                     ->label('Rumus')
                                     ->rows(4)
                                     ->columnSpan(2)
@@ -171,17 +151,17 @@ class QuestionResource extends Resource
                     ])
                     ->label('Variabel Rumus')
                     ->addActionLabel('Tambah Rumus')
-                    ->reorderable(false)
-                    ->afterStateHydrated(function ($component, $state) {
-                        Log::info('Rumus State Hydrated', ['state' => $state]);
-                    }),
+                    ->reorderable(false),
+                    // ->afterStateHydrated(function ($component, $state) {
+                    //     // Logika hydrating jika diperlukan
+                    // }),
 
-                Forms\Components\Repeater::make('answers')
+                Repeater::make('answers')
                     ->schema([
-                        Forms\Components\Textarea::make('content')
+                        Textarea::make('content')
                             ->label('Answer Content')
                             ->required(),
-                        Forms\Components\Checkbox::make('is_correct')
+                        Checkbox::make('is_correct')
                             ->label('Is Correct')
                             ->default(false),
                     ])
@@ -189,76 +169,49 @@ class QuestionResource extends Resource
                     ->minItems(2)
                     ->required()
                     ->afterStateHydrated(function ($component, $state, $record) {
-                        Log::info('Answers After State Hydrated', [
-                            'state' => $state,
-                            'record' => $record ? $record->toArray() : null,
-                        ]);
-
-                        if (is_null($state) && $record) {
-                            $answers = $record->attributes['answers'] ?? [];
-                            $answers = is_string($answers) ? json_decode($answers, true) : $answers;
-                            Log::info('Hydrating Answers from Record', ['answers' => $answers]);
-                            $component->state($answers);
-                        }
+                        // Logika hydrating jika diperlukan
                     }),
 
-                Forms\Components\FileUpload::make('image_path')
+                FileUpload::make('image_path')
                     ->label('Image')
                     ->directory('questions')
-                    ->disk('public') 
-                    ->visibility('public') 
+                    ->disk('public')
+                    ->visibility('public')
                     ->nullable(),
             ]);
     }
 
-    public static function table(Table $table): Table
+    public function table(Table $table): Table
     {
         return $table
+            ->recordTitleAttribute('content') // Menampilkan sebagian konten pertanyaan di header
             ->columns([
-                Tables\Columns\TextColumn::make('bab.name')
-                    ->label('Bab')
-                    ->sortable()
-                    ->searchable(),
+                // Salin kolom dari tabel QuestionResource di sini
                 Tables\Columns\TextColumn::make('content')
                     ->limit(50)
                     ->searchable(),
                 Tables\Columns\ImageColumn::make('image_path')
                     ->label('Image')
-                    ->disk('public') 
-                    ->visibility('public'), 
+                    ->disk('public')
+                    ->visibility('public'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Created At')
                     ->dateTime(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('bab')
-                    ->relationship('bab', 'name')
-                    ->label('Filter by Bab'),
+                //
+            ])
+            ->headerActions([
+                Tables\Actions\CreateAction::make(), // Izinkan membuat pertanyaan baru di bab ini
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\EditAction::make(), // Izinkan mengedit pertanyaan
+                Tables\Actions\DeleteAction::make(), // Izinkan menghapus pertanyaan
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
-
-    public static function getPages(): array
-    {
-        return [
-            'index' => Pages\ListQuestions::route('/'),
-            'create' => Pages\CreateQuestion::route('/create'),
-            'edit' => Pages\EditQuestion::route('/{record}/edit'),
-        ];
     }
 }

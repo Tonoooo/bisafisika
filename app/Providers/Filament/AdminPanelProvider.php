@@ -5,6 +5,8 @@ namespace App\Providers\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationBuilder;
+use Filament\Navigation\NavigationItem;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -26,8 +28,8 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->login()
-            ->registration()
+            ->login(\App\Filament\Pages\CustomLogin::class)
+            //->registration()
             ->passwordReset()
             ->profile()
             ->colors([
@@ -56,9 +58,80 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                \App\Http\Middleware\CheckUserStatus::class,
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
+            ->navigation(function (NavigationBuilder $builder): NavigationBuilder {
+                $user = auth()->user();
+
+                $items = [];
+
+                if (!$user) {
+                    return $builder->items([]);
+                }
+
+                // Menu dasar untuk semua role
+                $items = [
+                    NavigationItem::make('Dashboard')
+                        ->icon('heroicon-o-home')
+                        ->url(fn (): string => Pages\Dashboard::getUrl()),
+                    
+                ];
+
+                // Menu tambahan berdasarkan role
+                if ($user->hasRole('super_admin')) {
+                    $items = array_merge($items, [
+                        NavigationItem::make('Quiz')
+                            ->icon('heroicon-o-academic-cap')
+                            ->url(fn (): string => \App\Filament\Resources\QuizResource::getUrl()),
+                        NavigationItem::make('Bab')
+                            ->icon('heroicon-o-book-open')
+                            ->url(fn (): string => \App\Filament\Resources\BabResource::getUrl()),
+                        NavigationItem::make('Questions')
+                            ->icon('heroicon-o-question-mark-circle')
+                            ->url(fn (): string => \App\Filament\Resources\QuestionResource::getUrl()),
+                        NavigationItem::make('Take Quiz')
+                            ->icon('heroicon-o-academic-cap')
+                            ->url(fn (): string => route('quiz.list')),
+                        NavigationItem::make('Pengguna')
+                            ->icon('heroicon-o-users')
+                            ->url(fn (): string => \App\Filament\Resources\UserResource::getUrl()),
+                        NavigationItem::make('Sekolah')
+                            ->icon('heroicon-o-building-office')
+                            ->url(fn (): string => \App\Filament\Resources\SchoolResource::getUrl()),
+                        NavigationItem::make('Riwayat Quiz')
+                            ->icon('heroicon-o-clock')
+                            ->url(fn (): string => route('quiz.history')),
+                        NavigationItem::make('Leaderboard')
+                            ->icon('heroicon-o-trophy')
+                            ->url(fn (): string => \App\Filament\Resources\LeaderboardResource::getUrl()),
+                        NavigationItem::make('Roles & Permissions')
+                            ->icon('heroicon-o-shield-check')
+                            ->url('/admin/shield/roles'),
+                    ]);
+                } elseif ($user->hasRole('guru')) {
+                    $items = array_merge($items, [
+                        NavigationItem::make('Leaderboard')
+                            ->icon('heroicon-o-trophy')
+                            ->url(fn (): string => \App\Filament\Resources\LeaderboardResource::getUrl()),
+                    ]);
+                } else {
+                    $items = array_merge($items, [
+                        NavigationItem::make('Take Quiz')
+                            ->icon('heroicon-o-academic-cap')
+                            ->url(fn (): string => route('quiz.list')),
+                        NavigationItem::make('Riwayat Quiz')
+                            ->icon('heroicon-o-clock')
+                            ->url(fn (): string => route('quiz.history')),
+                        NavigationItem::make('Leaderboard')
+                            ->icon('heroicon-o-trophy')
+                            ->url(fn (): string => \App\Filament\Resources\LeaderboardResource::getUrl()),
+                    ]);
+                }
+
+                return $builder->items($items);
+            });
     }
 }

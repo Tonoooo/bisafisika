@@ -10,7 +10,7 @@ class Leaderboard extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'quiz_id', 'score'];
+    protected $fillable = ['user_id', 'quiz_id', 'score', 'total_score'];
 
     public function user()
     {
