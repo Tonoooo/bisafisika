@@ -6,6 +6,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\LeaderboardResource\Pages;
 use App\Models\Leaderboard;
+use App\Models\StudentScore;
 use App\Models\School;
 use App\Models\User;
 use Filament\Forms\Form;
@@ -21,7 +22,7 @@ use Illuminate\Database\Eloquent\Model; // Import class Model
 
 class LeaderboardResource extends Resource
 {
-    protected static ?string $model = Leaderboard::class;
+    protected static ?string $model = StudentScore::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
     protected static ?string $navigationLabel = 'Total Leaderboard';
@@ -74,9 +75,11 @@ class LeaderboardResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Nama Siswa')
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user.school.name')
                     ->label('Sekolah')
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user.level')
                     ->label('Tingkat')
@@ -86,7 +89,14 @@ class LeaderboardResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('total_score')
                     ->label('Total Nilai')
-                    ->sortable('total_score')
+                    ->sortable()
+                    ->numeric(decimalPlaces: 2),
+                Tables\Columns\TextColumn::make('total_quizzes')
+                    ->label('Total Quiz')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('average_score')
+                    ->label('Rata-rata Nilai')
+                    ->sortable()
                     ->numeric(decimalPlaces: 2),
             ])
             ->filters([
@@ -132,8 +142,7 @@ class LeaderboardResource extends Resource
                     })
                     ->visible(fn () => auth()->user()->hasRole('super_admin') || auth()->user()->hasRole('guru')),
             ])
-            ->defaultSort('total_score', 'desc')
-            ->searchable(false);
+            ->defaultSort('total_score', 'desc');
     }
 
     public static function getEloquentQuery(): Builder
@@ -141,44 +150,24 @@ class LeaderboardResource extends Resource
         $query = parent::getEloquentQuery();
         $user = auth()->user();
 
-        // Buat subquery untuk mendapatkan total score dan row number
-        $subquery = DB::table('leaderboards')
-            ->select([
-                'leaderboards.id',
-                'leaderboards.user_id',
-                DB::raw('SUM(leaderboards.score) OVER (PARTITION BY leaderboards.user_id) as total_score'),
-                DB::raw('ROW_NUMBER() OVER (PARTITION BY leaderboards.user_id ORDER BY leaderboards.id) as rn')
-            ]);
-
-        // Query utama yang mengambil hanya baris pertama untuk setiap user
-        $query->fromSub($subquery, 'ranked_leaderboards')
-            ->select([
-                'ranked_leaderboards.id',
-                'ranked_leaderboards.user_id',
-                'ranked_leaderboards.total_score'
-            ])
-            ->where('ranked_leaderboards.rn', 1)
-            ->join('users', 'ranked_leaderboards.user_id', '=', 'users.id')
-            ->with(['user' => function($query) {
-                $query->with('school');
-            }]);
-
-        // Filter berdasarkan role
         if ($user->hasRole('guru')) {
-            $query->where('users.school_id', $user->school_id);
+            $query->whereHas('user', function ($query) use ($user) {
+                $query->where('school_id', $user->school_id);
+            });
         } elseif ($user->hasRole('siswa')) {
-            // Modifikasi query untuk siswa
             $query->where(function($q) use ($user) {
-                $q->where('users.id', $user->id)
+                $q->where('user_id', $user->id)
                   ->orWhere(function($q) use ($user) {
-                      $q->where('users.school_id', $user->school_id)
-                        ->where('users.level', $user->level)
-                        ->where('users.class', $user->class);
+                      $q->whereHas('user', function($q) use ($user) {
+                          $q->where('school_id', $user->school_id)
+                            ->where('level', $user->level)
+                            ->where('class', $user->class);
+                      });
                   });
             });
         }
 
-        return $query->orderByDesc('ranked_leaderboards.total_score');
+        return $query;
     }
 
 
