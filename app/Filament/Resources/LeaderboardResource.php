@@ -142,7 +142,8 @@ class LeaderboardResource extends Resource
                     })
                     ->visible(fn () => auth()->user()->hasRole('super_admin') || auth()->user()->hasRole('guru')),
             ])
-            ->defaultSort('total_score', 'desc');
+            ->defaultSort('total_score', 'desc')
+            ->recordUrl(fn (StudentScore $record): string => route('filament.admin.pages.student-quiz-history', ['userId' => $record->user_id]));
     }
 
     public static function getEloquentQuery(): Builder

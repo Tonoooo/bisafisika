@@ -16,12 +16,12 @@
                 @if ($userQuestion->question->image_path)
                     <img src="{{ asset('storage/' . $userQuestion->question->image_path) }}" alt="Question Image" class="mb-4 rounded-lg shadow-md">
                 @endif
-                {{-- <p class="mb-2 text-gray-700"><strong>Your Answer:</strong> {{  '$$'. $userQuestion->userAnswers->first()->answer_content .'$$' ?? 'No Answer' }}</p> --}}
+                {{-- <p class="mb-2 text-gray-700"><strong>Answer:</strong> {{  '$$'. $userQuestion->userAnswers->first()->answer_content .'$$' ?? 'No Answer' }}</p> --}}
                 @php
                 $firstUserAnswer = $userQuestion->userAnswers->first();
                 $answerContent = $firstUserAnswer ? $firstUserAnswer->answer_content : 'No Answer';
             @endphp
-            <p class="mb-2 text-gray-700"><strong>Your Answer:</strong> {!! '$$' . $answerContent . '$$' !!}</p>
+            <p class="mb-2 text-gray-700"><strong>Answer:</strong> {!! '$$' . $answerContent . '$$' !!}</p>
 
 
             </div>

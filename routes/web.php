@@ -21,6 +21,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/quiz/{userQuizId}/question/{questionIndex}', \App\Livewire\QuizQuestion::class)->name('quiz.question');
     Route::get('/quiz/results/{userQuizId}', \App\Livewire\QuizResult::class)->name('quiz.results');
     Route::get('/quiz/history', \App\Livewire\QuizHistory::class)->name('quiz.history');
+    Route::get('/admin/student-quiz-history/{userId}', \App\Filament\Pages\StudentQuizHistory::class)
+        ->name('filament.admin.pages.student-quiz-history');
 });
 
 Route::get('/', function () {

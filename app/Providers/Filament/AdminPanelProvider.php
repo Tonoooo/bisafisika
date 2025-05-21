@@ -76,12 +76,14 @@ class AdminPanelProvider extends PanelProvider
                 $items = [
                     NavigationItem::make('Dashboard')
                         ->icon('heroicon-o-home')
-                        ->url(fn (): string => Pages\Dashboard::getUrl()),
-                    
+                        ->url(fn (): string => Pages\Dashboard::getUrl())
+                        ->visible(fn () => $user->roles->contains('name', 'super_admin') || 
+                                         $user->roles->contains('name', 'guru') || 
+                                         $user->roles->contains('name', 'siswa')),
                 ];
 
                 // Menu tambahan berdasarkan role
-                if ($user->hasRole('super_admin')) {
+                if ($user->roles->contains('name', 'super_admin')) {
                     $items = array_merge($items, [
                         NavigationItem::make('Quiz')
                             ->icon('heroicon-o-academic-cap')
@@ -111,7 +113,7 @@ class AdminPanelProvider extends PanelProvider
                             ->icon('heroicon-o-shield-check')
                             ->url('/admin/shield/roles'),
                     ]);
-                } elseif ($user->hasRole('guru')) {
+                } elseif ($user->roles->contains('name', 'guru')) {
                     $items = array_merge($items, [
                         NavigationItem::make('Leaderboard')
                             ->icon('heroicon-o-trophy')

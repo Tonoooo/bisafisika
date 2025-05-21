@@ -7,17 +7,26 @@ use App\Models\StudentScore;
 
 class LeaderboardObserver
 {
-    public function created(Leaderboard $leaderboard)
+    /**
+     * Handle the Leaderboard "created" event.
+     */
+    public function created(Leaderboard $leaderboard): void
     {
         StudentScore::updateScore($leaderboard->user_id);
     }
 
-    public function updated(Leaderboard $leaderboard)
+    /**
+     * Handle the Leaderboard "updated" event.
+     */
+    public function updated(Leaderboard $leaderboard): void
     {
         StudentScore::updateScore($leaderboard->user_id);
     }
 
-    public function deleted(Leaderboard $leaderboard)
+    /**
+     * Handle the Leaderboard "deleted" event.
+     */
+    public function deleted(Leaderboard $leaderboard): void
     {
         StudentScore::updateScore($leaderboard->user_id);
     }

@@ -10,7 +10,12 @@ class UserQuiz extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'quiz_id', 'started_at'];
+    protected $fillable = [
+        'user_id', 
+        'quiz_id', 
+        'started_at',
+        'is_completed'
+    ];
 
     public function user()
     {
@@ -25,5 +30,11 @@ class UserQuiz extends Model
     public function userQuestions()
     {
         return $this->hasMany(UserQuestion::class);
+    }
+
+    public function leaderboard()
+    {
+        return $this->hasOne(Leaderboard::class, 'quiz_id', 'quiz_id')
+            ->where('user_id', $this->user_id);
     }
 }
