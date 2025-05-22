@@ -21,6 +21,8 @@ class QuizQuestion extends Component
 
     public $answer;
 
+    public $timeLeft;
+
     public function mount($userQuizId, $questionIndex)
     {
         $this->userQuizId = $userQuizId;
@@ -28,10 +30,32 @@ class QuizQuestion extends Component
         $userQuiz = UserQuiz::findOrFail($this->userQuizId);
         $this->question = $userQuiz->userQuestions[$this->questionIndex];
         $this->totalQuestions = $userQuiz->userQuestions->count();
-        // Shuffle the answers
-        $answers = $this->question->question->answers;
-        shuffle($answers);
-        $this->question->question->shuffled_answers = collect($answers);
+        
+        // Calculate remaining time
+        $startTime = $userQuiz->created_at;
+        $timeLimit = $userQuiz->quiz->time_limit * 60; // Convert minutes to seconds
+        $elapsedTime = now()->diffInSeconds($startTime);
+        $this->timeLeft = max(0, $timeLimit - $elapsedTime);
+
+        // Jika waktu habis, selesaikan kuis
+        if ($this->timeLeft <= 0) {
+            $this->handleTimeUp();
+            return;
+        }
+
+        // Shuffle the answers only if they haven't been shuffled and stored before
+        if (!isset($this->question->question->shuffled_answers)) {
+            $answers = json_decode($this->question->answers, true);
+            shuffle($answers);
+            $this->question->question->shuffled_answers = collect($answers);
+        }
+        
+        // Load existing answer if available
+        $existingAnswer = UserAnswer::where('user_question_id', $this->question->id)->first();
+        if ($existingAnswer) {
+            $this->answer = $existingAnswer->answer_content;
+        }
+
         if ($userQuiz->is_completed) {
             return redirect()->route('quiz.results', $this->userQuizId);
         }
@@ -40,52 +64,108 @@ class QuizQuestion extends Component
         }
     }
 
-    public function submitAnswer()
+    public function getTimeLeft()
     {
-        if (empty($this->answer)) {
-            session()->flash('error', 'Silakan pilih satu jawaban.');
-            return;
+        $userQuiz = UserQuiz::findOrFail($this->userQuizId);
+        $startTime = $userQuiz->created_at;
+        $timeLimit = $userQuiz->quiz->time_limit * 60;
+        $elapsedTime = now()->diffInSeconds($startTime);
+        $this->timeLeft = max(0, $timeLimit - $elapsedTime);
+
+        if ($this->timeLeft <= 0) {
+            $this->handleTimeUp();
         }
 
-        // Decode the JSON string to an array
-        $answers = json_decode($this->question->answers, true);
+        return $this->timeLeft;
+    }
 
-        // Ensure $answers is an array before proceeding
-        if (!is_array($answers)) {
-            Log::error('Failed to decode JSON answers in question ID: ' . $this->question->id);
-            session()->flash('error', 'Terjadi kesalahan dalam memproses jawaban.');
-            return;
-        }
-
-        $selectedAnswer = trim($this->answer);
-        $isCorrect = false;
-
-        foreach ($answers as $answer) {
-            if (trim($answer['content']) === $selectedAnswer) {
-                $isCorrect = $answer['is_correct'];
-                break;
+    public function handleTimeUp()
+    {
+        $userQuiz = UserQuiz::findOrFail($this->userQuizId);
+        
+        // Simpan jawaban kosong untuk soal yang belum dijawab
+        foreach ($userQuiz->userQuestions as $userQuestion) {
+            if (!$userQuestion->userAnswers()->exists()) {
+                UserAnswer::create([
+                    'user_question_id' => $userQuestion->id,
+                    'answer_content' => null,
+                    'is_correct' => false
+                ]);
             }
         }
 
-        UserAnswer::updateOrCreate(
-            ['user_question_id' => $this->question->id],
-            ['answer_content' => $selectedAnswer, 'is_correct' => $isCorrect]
-        );
+        // Tandai kuis sebagai selesai
+        $userQuiz->update(['is_completed' => true]);
+        
+        return redirect()->route('quiz.results', $this->userQuizId);
+    }
 
+    public function saveCurrentAnswer()
+    {
+        if (!empty($this->answer)) {
+            $answers = json_decode($this->question->answers, true);
+            $selectedAnswer = trim($this->answer);
+            $isValidAnswer = false;
+            $isCorrect = false;
+
+            foreach ($answers as $answer) {
+                if (trim($answer['content']) === $selectedAnswer) {
+                    $isValidAnswer = true;
+                    $isCorrect = $answer['is_correct'];
+                    break;
+                }
+            }
+
+            UserAnswer::updateOrCreate(
+                ['user_question_id' => $this->question->id],
+                [
+                    'answer_content' => $isValidAnswer ? $selectedAnswer : null,
+                    'is_correct' => $isCorrect
+                ]
+            );
+        }
+    }
+
+    public function submitAnswer()
+    {
+        // Simpan jawaban saat ini
+        $this->saveCurrentAnswer();
+
+        // Lanjut ke soal berikutnya atau selesai
         if ($this->questionIndex + 1 < $this->totalQuestions) {
-            return redirect()->route('quiz.question', ['userQuizId' => $this->userQuizId, 'questionIndex' => $this->questionIndex + 1]);
+            return redirect()->route('quiz.question', [
+                'userQuizId' => $this->userQuizId, 
+                'questionIndex' => $this->questionIndex + 1
+            ]);
         } else {
             $this->question->userQuiz->update(['is_completed' => true]);
             return redirect()->route('quiz.results', $this->userQuizId);
         }
     }
 
+    public function cancelQuiz()
+    {
+        $userQuiz = UserQuiz::findOrFail($this->userQuizId);
+        $userQuiz->update(['is_completed' => true]);
+        return redirect()->route('quiz.results', $this->userQuizId);
+    }
+
     public function render()
     {
+        // Pastikan jawaban yang ditampilkan valid
+        $answers = json_decode($this->question->answers, true);
+        if (is_array($answers)) {
+            $validAnswers = array_filter($answers, function($answer) {
+                return !empty($answer['content']) && strpos($answer['content'], '$$') === false;
+            });
+            $this->question->question->shuffled_answers = collect($validAnswers);
+        }
+
         return view('livewire.quiz-question', [
             'question' => $this->question,
             'questionIndex' => $this->questionIndex,
             'totalQuestions' => $this->totalQuestions,
+            'timeLeft' => $this->timeLeft
         ]);
     }
 }

@@ -1,7 +1,7 @@
 <nav class="bg-white shadow">
     <div class="px-2 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <div class="relative flex items-center justify-between h-16">
-            <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
+            <div class="absolute inset-y-0 left-0 flex items-center sm:hidden hidden">
                 <button type="button" class="inline-flex items-center justify-center p-2 text-gray-400 rounded-md hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
                     <span class="sr-only">Open main menu</span>
                     <!-- Icon when menu is closed. -->
@@ -27,7 +27,9 @@
                 </div>
                 <div class="hidden sm:block sm:ml-6">
                     <div class="flex space-x-4">
-                        <a href="/" class="px-3 py-2 text-sm font-medium text-gray-900 rounded-md hover:bg-gray-700 hover:text-white">Home</a>
+                        <a href="/" class="px-3 py-2 text-sm font-medium rounded-md bg-blue-600 text-white hover:bg-blue-700">
+                            <x-heroicon-o-home class="w-4 h-4 inline-block mr-1" />Kembali ke Beranda
+                        </a>
                     </div>
                 </div>
             </div>
@@ -36,7 +38,9 @@
 
     <div class="sm:hidden" id="mobile-menu">
         <div class="px-2 pt-2 pb-3 space-y-1">
-            <a href="/admin" class="block px-3 py-2 text-base font-medium text-gray-900 rounded-md hover:bg-gray-700 hover:text-white">Home</a>
+            <a href="/admin" class="block px-3 py-2 text-sm font-medium rounded-md border bg-blue-300 border-blue-300 text-blue-900 hover:border-blue-400 hover:bg-blue-100">
+                <x-heroicon-o-home class="w-4 h-4 inline-block mr-1" />Kembali ke Beranda
+            </a>
         </div>
     </div>
 </nav>

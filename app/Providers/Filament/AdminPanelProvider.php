@@ -96,7 +96,7 @@ class AdminPanelProvider extends PanelProvider
                             ->url(fn (): string => \App\Filament\Resources\QuestionResource::getUrl()),
                         NavigationItem::make('Take Quiz')
                             ->icon('heroicon-o-academic-cap')
-                            ->url(fn (): string => route('quiz.list')),
+                            ->url(fn (): string => \App\Filament\Pages\TakeQuiz::getUrl()),
                         NavigationItem::make('Pengguna')
                             ->icon('heroicon-o-users')
                             ->url(fn (): string => \App\Filament\Resources\UserResource::getUrl()),

@@ -197,42 +197,73 @@ class QuizController extends Controller
                         Log::warning('Added missing closing parentheses', ['original' => $item[$key], 'corrected' => $expression]);
                     }
 
-                    // Ganti ** dengan pow(base, exponent) untuk mendukung pangkat umum
-                    $expression = preg_replace('/([0-9\.]+)\*\*([-\d\.]+)/', 'pow($1, $2)', $expression);
-                    Log::info('After converting ** to pow', ['expression' => $expression]);
-
                     // Ganti koma dengan titik untuk desimal
                     $expression = str_replace(',', '.', $expression);
 
-                    // Pastikan ekspresi valid sebelum evaluasi
-                    $expression = str_replace('/100', '/100.0', $expression); // Hindari pembagian integer
-                    $expression = preg_replace('/\s+/', '', $expression); // Hapus spasi
+                    // Perbaikan format angka desimal
+                    // 1. Hapus spasi
+                    $expression = preg_replace('/\s+/', '', $expression);
+                    
+                    // 2. Perbaiki angka desimal yang dimulai dengan titik
+                    $expression = preg_replace('/^\.([0-9]+)/', '0.$1', $expression);
+                    
+                    // 3. Perbaiki angka desimal di dalam tanda kurung
+                    $expression = preg_replace('/\(\.([0-9]+)/', '(0.$1', $expression);
+                    
+                    // 4. Perbaiki angka desimal setelah operator
+                    $expression = preg_replace('/([+\-*\/])\.([0-9]+)/', '$10.$2', $expression);
+                    
+                    // 5. Perbaiki angka desimal yang memiliki lebih dari satu titik
+                    $expression = preg_replace('/([0-9]+)\.([0-9]+)\.([0-9]+)/', '$1.$2$3', $expression);
 
-                    // Konversi fungsi trigonometri
-                    if (preg_match_all('/(sin|cos|tan|sqrt)\s*\(\s*([0-9\.]+)\s*\)/', $expression, $matches, PREG_SET_ORDER)) {
-                        foreach ($matches as $match) {
-                            $function = $match[1];
-                            $arg = trim($match[2]);
-                            if ($function === 'sqrt') {
-                                $funcResult = sqrt($arg);
-                            } else {
-                                $radianArg = $arg * M_PI / 180;
-                                $funcResult = call_user_func($function, $radianArg);
-                            }
-                            $oldPattern = "$function($arg)";
-                            $expression = str_replace($oldPattern, $funcResult, $expression);
-                            Log::info('Evaluated function', [
-                                'function' => $function,
-                                'argument' => $arg,
-                                'result' => $funcResult,
-                                'new_expression' => $expression,
-                            ]);
+                    // 6. Evaluasi fungsi trigonometri
+                    while (preg_match('/(sin|cos|tan)\(([0-9\.\*\/\+\-]+)\)/', $expression, $matches)) {
+                        $function = $matches[1];
+                        $arg = $matches[2];
+                        
+                        // Evaluasi argumen terlebih dahulu
+                        $argValue = eval('return ' . $arg . ';');
+                        
+                        // Konversi ke radian jika perlu
+                        if (strpos($arg, 'pi/180') !== false) {
+                            $argValue = $argValue * M_PI / 180;
                         }
+                        
+                        // Evaluasi fungsi trigonometri
+                        $result = call_user_func($function, $argValue);
+                        
+                        // Ganti ekspresi dengan hasil
+                        $expression = str_replace($matches[0], $result, $expression);
+                        
+                        Log::info('Evaluated trigonometric function', [
+                            'function' => $function,
+                            'argument' => $arg,
+                            'argument_value' => $argValue,
+                            'result' => $result,
+                            'new_expression' => $expression
+                        ]);
                     }
 
-                    // Sanitasi string setelah konversi fungsi
-                    $expression = preg_replace('/[^0-9\.\+\-\*\/\(\)]/', '', $expression);
-                    Log::info('Sanitized expression', ['expression' => $expression]);
+                    // 7. Tangani pangkat
+                    while (preg_match('/([0-9\.]+)\*\*([0-9\.]+)/', $expression, $matches)) {
+                        $base = floatval($matches[1]);
+                        $exponent = floatval($matches[2]);
+                        $result = pow($base, $exponent);
+                        $expression = str_replace($matches[0], $result, $expression);
+                        Log::info('Evaluated power', [
+                            'base' => $base,
+                            'exponent' => $exponent,
+                            'result' => $result,
+                            'new_expression' => $expression
+                        ]);
+                    }
+
+                    Log::info('Expression after trigonometric evaluation', ['expression' => $expression]);
+
+                    // Validasi format ekspresi sebelum evaluasi
+                    if (!preg_match('/^[0-9\.\s+\-*\/()]+$/', $expression)) {
+                        throw new \Exception('Invalid expression format after processing');
+                    }
 
                     // Evaluasi ekspresi
                     $result = $this->evaluateExpression($expression);
@@ -292,8 +323,72 @@ class QuizController extends Controller
                 throw new \Exception('Invalid characters in expression: ' . implode(', ', $matches[0]));
             }
 
-            Log::info('Evaluating Expression', ['expression' => $expression]);
+            // Perbaikan format angka desimal
+            // 1. Hapus spasi
+            $expression = preg_replace('/\s+/', '', $expression);
+            
+            // 2. Perbaiki angka desimal yang dimulai dengan titik
+            $expression = preg_replace('/^\.([0-9]+)/', '0.$1', $expression);
+            
+            // 3. Perbaiki angka desimal di dalam tanda kurung
+            $expression = preg_replace('/\(\.([0-9]+)/', '(0.$1', $expression);
+            
+            // 4. Perbaiki angka desimal setelah operator
+            $expression = preg_replace('/([+\-*\/])\.([0-9]+)/', '$10.$2', $expression);
+            
+            // 5. Perbaiki angka desimal yang memiliki lebih dari satu titik
+            $expression = preg_replace('/([0-9]+)\.([0-9]+)\.([0-9]+)/', '$1.$2$3', $expression);
 
+            // 6. Evaluasi fungsi trigonometri
+            while (preg_match('/(sin|cos|tan)\(([0-9\.\*\/\+\-]+)\)/', $expression, $matches)) {
+                $function = $matches[1];
+                $arg = $matches[2];
+                
+                // Evaluasi argumen terlebih dahulu
+                $argValue = eval('return ' . $arg . ';');
+                
+                // Konversi ke radian jika perlu
+                if (strpos($arg, 'pi/180') !== false) {
+                    $argValue = $argValue * M_PI / 180;
+                }
+                
+                // Evaluasi fungsi trigonometri
+                $result = call_user_func($function, $argValue);
+                
+                // Ganti ekspresi dengan hasil
+                $expression = str_replace($matches[0], $result, $expression);
+                
+                Log::info('Evaluated trigonometric function', [
+                    'function' => $function,
+                    'argument' => $arg,
+                    'argument_value' => $argValue,
+                    'result' => $result,
+                    'new_expression' => $expression
+                ]);
+            }
+
+            // 7. Tangani pangkat
+            while (preg_match('/([0-9\.]+)\*\*([0-9\.]+)/', $expression, $matches)) {
+                $base = floatval($matches[1]);
+                $exponent = floatval($matches[2]);
+                $result = pow($base, $exponent);
+                $expression = str_replace($matches[0], $result, $expression);
+                Log::info('Evaluated power', [
+                    'base' => $base,
+                    'exponent' => $exponent,
+                    'result' => $result,
+                    'new_expression' => $expression
+                ]);
+            }
+
+            Log::info('Expression after trigonometric evaluation', ['expression' => $expression]);
+
+            // Validasi format ekspresi sebelum evaluasi
+            if (!preg_match('/^[0-9\.\s+\-*\/()]+$/', $expression)) {
+                throw new \Exception('Invalid expression format after processing');
+            }
+
+            // Evaluasi ekspresi
             $result = eval('return ' . $expression . ';');
 
             if (!is_numeric($result)) {
@@ -305,6 +400,7 @@ class QuizController extends Controller
             Log::error('Error evaluating expression', [
                 'expression' => $expression,
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ]);
             return 'Error';
         }
