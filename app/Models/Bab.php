@@ -12,9 +12,8 @@ class Bab extends Model
         'name',
     ];
 
-    //  relasi jika diperlukan di masa depan, misalnya:
-    public function questions()
+    public function quizzes()
     {
-        return $this->hasMany(Question::class);
+        return $this->hasMany(Quiz::class);
     }
 }

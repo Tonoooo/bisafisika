@@ -60,14 +60,13 @@ class BabResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
-            ->recordUrl(fn (Bab $record): string => QuestionResource::getUrl('index', ['tableFilters' => ['bab' => ['value' => $record->id]]]));
+            ->recordUrl(fn (Bab $record): string => route('filament.admin.resources.babs.view-quizzes', ['record' => $record]));
     }
 
     public static function getRelations(): array
     {
         return [
-            //  bisa tambahkan relation manager untuk menampilkan pertanyaan di dalam Bab
-            // RelationManagers\QuestionsRelationManager::class,
+            RelationManagers\QuizzesRelationManager::class,
         ];
     }
 

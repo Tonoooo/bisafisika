@@ -4,12 +4,17 @@ namespace App\Filament\Resources\BabResource\Pages;
 
 use App\Filament\Resources\BabResource;
 use Filament\Resources\Pages\Page;
-use Filament\Tables;
-use Filament\Tables\Table;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Table;
+use Filament\Tables;
 use App\Models\Quiz;
-use Illuminate\Database\Eloquent\Builder;
+use App\Models\Bab;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Form;
+use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Components\Select;
 
 class ViewQuizzes extends Page implements HasTable
 {
@@ -21,58 +26,81 @@ class ViewQuizzes extends Page implements HasTable
 
     public $record;
 
-    public function getTitle(): string
+    public function mount($record): void
     {
-        $bab = \App\Models\Bab::find($this->record);
-        if (!$bab) {
+        $this->record = Bab::find($record);
+        
+        if (!$this->record) {
             abort(404, 'Bab tidak ditemukan');
         }
-        return "Daftar Quiz - {$bab->name}";
+    }
+
+    public function getTitle(): string
+    {
+        return "Daftar Quiz - {$this->record->name}";
     }
 
     public function table(Table $table): Table
     {
-        $bab = \App\Models\Bab::find($this->record);
-        
-        if (!$bab) {
-            return $table;
-        }
-
         return $table
             ->query(
                 Quiz::query()
-                    ->where('bab_id', $bab->id)
+                    ->where('bab_id', $this->record->id)
             )
             ->columns([
                 Tables\Columns\TextColumn::make('title')
-                    ->label('Judul Quiz')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('Judul Quiz'),
                 Tables\Columns\TextColumn::make('start_date')
-                    ->label('Tanggal Mulai')
-                    ->sortable(),
+                    ->dateTime()
+                    ->sortable()
+                    ->label('Waktu Mulai'),
                 Tables\Columns\TextColumn::make('close_date')
-                    ->label('Tanggal Selesai')
-                    ->sortable(),
+                    ->dateTime()
+                    ->sortable()
+                    ->label('Waktu Selesai'),
                 Tables\Columns\TextColumn::make('time_limit')
-                    ->label('Batas Waktu (menit)'),
-                Tables\Columns\TextColumn::make('attempt_limit')
-                    ->label('Batas Percobaan'),
+                    ->numeric()
+                    ->sortable()
+                    ->label('Durasi (menit)'),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                //
+                Tables\Actions\EditAction::make()
+                    ->form([
+                        Select::make('bab_id')
+                            ->label('Bab')
+                            ->relationship('bab', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->required(),
+                        TextInput::make('title')
+                            ->required()
+                            ->maxLength(255)
+                            ->label('Judul Quiz'),
+                        DateTimePicker::make('start_date')
+                            ->required()
+                            ->label('Waktu Mulai'),
+                        DateTimePicker::make('close_date')
+                            ->required()
+                            ->label('Waktu Selesai'),
+                        TextInput::make('time_limit')
+                            ->numeric()
+                            ->required()
+                            ->label('Durasi (menit)'),
+                        TextInput::make('attempt_limit')
+                            ->numeric()
+                            ->required()
+                            ->label('Batas Percobaan'),
+                    ]),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                //
-            ])
-            ->striped()
-            ->paginated([10, 25, 50, 100])
-            ->defaultPaginationPageOption(10)
-            ->deferLoading()
-            ->recordAction(null)
-            ->recordUrl(null)
-            ->selectable(false);
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
     }
 } 

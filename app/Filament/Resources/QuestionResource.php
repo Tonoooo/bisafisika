@@ -12,7 +12,6 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Log;
 use App\Traits\HasRepeaterIndex;
-use App\Models\Bab;
 use Filament\Forms\Components\Select;
 
 class QuestionResource extends Resource
@@ -28,17 +27,6 @@ class QuestionResource extends Resource
     {
         return $form
             ->schema([
-                // Select::make('bab_id')
-                //     ->label('Bab')
-                //     ->relationship('bab', 'name')
-                //     ->searchable()
-                //     ->preload()
-                //     ->createOptionForm([
-                //         Forms\Components\TextInput::make('name')
-                //             ->required()
-                //             ->maxLength(255),
-                //     ])
-                //     ->nullable(),
 
                 Forms\Components\Repeater::make('random_variables')
                     ->schema([
@@ -215,10 +203,6 @@ class QuestionResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('bab.name')
-                    ->label('Bab')
-                    ->sortable()
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('content')
                     ->limit(50)
                     ->searchable(),
@@ -229,11 +213,6 @@ class QuestionResource extends Resource
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Created At')
                     ->dateTime(),
-            ])
-            ->filters([
-                Tables\Filters\SelectFilter::make('bab')
-                    ->relationship('bab', 'name')
-                    ->label('Filter by Bab'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
