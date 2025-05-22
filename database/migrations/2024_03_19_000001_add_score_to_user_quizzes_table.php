@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_quizzes', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::table('user_quizzes', function (Blueprint $table) {
+            $table->decimal('score', 5, 2)->default(0)->after('is_completed');
         });
     }
 
@@ -22,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_quizzes');
+        Schema::table('user_quizzes', function (Blueprint $table) {
+            $table->dropColumn('score');
+        });
     }
-};
+}; 

@@ -24,6 +24,17 @@ class QuizResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('title')
                     ->required(),
+                Forms\Components\Select::make('bab_id')
+                    ->label('Bab')
+                    ->relationship('bab', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->createOptionForm([
+                        Forms\Components\TextInput::make('name')
+                            ->required()
+                            ->maxLength(255),
+                    ])
+                    ->nullable(),
                 Forms\Components\DateTimePicker::make('start_date')
                     ->required(),
                 Forms\Components\DateTimePicker::make('close_date')
@@ -52,6 +63,7 @@ class QuizResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('title')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('bab.name')->label('Bab')->sortable(),
                 Tables\Columns\TextColumn::make('start_date')->sortable(),
                 Tables\Columns\TextColumn::make('close_date')->sortable(),
                 Tables\Columns\TextColumn::make('time_limit'),

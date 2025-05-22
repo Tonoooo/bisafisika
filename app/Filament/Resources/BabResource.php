@@ -50,6 +50,8 @@ class BabResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make()
+                    ->url(fn (Bab $record): string => route('filament.admin.resources.babs.view-quizzes', ['record' => $record])),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -75,6 +77,7 @@ class BabResource extends Resource
             'index' => Pages\ListBabs::route('/'),
             'create' => Pages\CreateBab::route('/create'),
             'edit' => Pages\EditBab::route('/{record}/edit'),
+            'view-quizzes' => Pages\ViewQuizzes::route('/{record}/quizzes'),
         ];
     }
 }

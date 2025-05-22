@@ -47,14 +47,6 @@ class StudentQuizHistory extends Page implements HasTable
         return $table
             ->query(
                 UserQuiz::query()
-                    ->select([
-                        'user_quizzes.*',
-                        'leaderboards.score as quiz_score'
-                    ])
-                    ->leftJoin('leaderboards', function($join) {
-                        $join->on('user_quizzes.quiz_id', '=', 'leaderboards.quiz_id')
-                            ->where('leaderboards.user_id', '=', $this->userId);
-                    })
                     ->where('user_quizzes.user_id', $this->userId)
                     ->where('user_quizzes.is_completed', true)
                     ->with('quiz')
@@ -72,13 +64,10 @@ class StudentQuizHistory extends Page implements HasTable
                     ->label('Waktu Selesai')
                     ->dateTime('d M Y H:i')
                     ->sortable(),
-                TextColumn::make('quiz_score')
+                TextColumn::make('score')
                     ->label('Nilai')
                     ->numeric(decimalPlaces: 2)
-                    ->sortable()
-                    ->state(function (UserQuiz $record): ?float {
-                        return $record->quiz_score;
-                    }),
+                    ->sortable(),
             ])
             ->actions([
                 \Filament\Tables\Actions\Action::make('view_result')

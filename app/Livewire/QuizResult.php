@@ -43,6 +43,15 @@ class QuizResult extends Component
 
                 // Calculate the score as a percentage
                 $this->score = ($this->score / $totalQuestions) * 100;
+
+                // Update score in user_quizzes table
+                $this->userQuiz->update([
+                    'score' => $this->score,
+                    'is_completed' => true
+                ]);
+
+                // Update student score
+                StudentScore::updateScore($this->userQuiz->user_id);
             }
 
             // Cek akses berdasarkan role
@@ -97,31 +106,26 @@ class QuizResult extends Component
                     'user_id' => auth()->id()
                 ]);
 
-                // Hitung ulang total quiz dan score
+                // Hitung ulang total quiz dan score dari user_quizzes
                 $totalQuizzes = UserQuiz::where('user_id', auth()->id())
                     ->where('is_completed', true)
                     ->count();
 
                 // Hitung total score dari semua quiz yang sudah dikerjakan
-                $totalScore = DB::table('leaderboards')
-                    ->join('user_quizzes', function($join) {
-                        $join->on('leaderboards.quiz_id', '=', 'user_quizzes.quiz_id')
-                            ->where('user_quizzes.user_id', '=', auth()->id())
-                            ->where('user_quizzes.is_completed', '=', true);
-                    })
-                    ->where('leaderboards.user_id', auth()->id())
-                    ->sum('leaderboards.score');
+                $totalScore = UserQuiz::where('user_id', auth()->id())
+                    ->where('is_completed', true)
+                    ->sum('score');
 
                 $averageScore = $totalQuizzes > 0 ? $totalScore / $totalQuizzes : 0;
 
-                Log::info('Calculated scores', [
+                Log::info('Calculated scores from user_quizzes', [
                     'user_id' => auth()->id(),
                     'total_quizzes' => $totalQuizzes,
                     'total_score' => $totalScore,
                     'average_score' => $averageScore,
-                    'raw_scores' => DB::table('leaderboards')
-                        ->where('user_id', auth()->id())
-                        ->select('quiz_id', 'score')
+                    'raw_scores' => UserQuiz::where('user_id', auth()->id())
+                        ->where('is_completed', true)
+                        ->select('quiz_id', 'score', 'created_at')
                         ->get()
                         ->toArray()
                 ]);

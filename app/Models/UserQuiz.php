@@ -14,7 +14,8 @@ class UserQuiz extends Model
         'user_id', 
         'quiz_id', 
         'started_at',
-        'is_completed'
+        'is_completed',
+        'score'
     ];
 
     public function user()

@@ -9,12 +9,14 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Actions\Action;
+use Filament\Notifications\Notification;
 
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-users';
 
     public static function form(Form $form): Form
     {
@@ -27,15 +29,28 @@ class UserResource extends Resource
                     ->email()
                     ->required()
                     ->maxLength(255),
-                Forms\Components\DateTimePicker::make('email_verified_at'),
                 Forms\Components\Select::make('roles')
                     ->relationship('roles', 'name')
                     ->multiple()
                     ->preload()
                     ->searchable(),
-                Forms\Components\TextInput::make('password')
-                    ->password()
-                    ->required()
+                Forms\Components\Select::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'verified' => 'Verified',
+                    ])
+                    ->required(),
+                Forms\Components\Select::make('school_id')
+                    ->relationship('school', 'name')
+                    ->searchable()
+                    ->preload(),
+                Forms\Components\Select::make('level')
+                    ->options([
+                        '1' => 'Tingkat 1',
+                        '2' => 'Tingkat 2',
+                        '3' => 'Tingkat 3',
+                    ]),
+                Forms\Components\TextInput::make('class')
                     ->maxLength(255),
             ]);
     }
@@ -45,27 +60,45 @@ class UserResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('email')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('email_verified_at')
-                    ->dateTime()
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('roles.name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->label('Role')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('school.name')
+                    ->label('Sekolah')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'verified' => 'success',
+                        'pending' => 'warning',
+                    })
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'verified' => 'Verified',
+                        'pending' => 'Pending',
+                    })
+                    ->sortable(),
             ])
+            ->defaultSort('name', 'asc')
             ->filters([
                 //
             ])
             ->actions([
+                Action::make('verify')
+                    ->icon('heroicon-o-clock')
+                    ->color('warning')
+                    ->requiresConfirmation()
+                    ->visible(fn (User $record): bool => $record->status === 'pending')
+                    ->action(function (User $record): void {
+                        $record->update(['status' => 'verified']);
+                        Notification::make()
+                            ->title('User berhasil diverifikasi')
+                            ->success()
+                            ->send();
+                    }),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
@@ -80,7 +113,10 @@ class UserResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManageUsers::route('/'),
+            'index' => Pages\ListUsers::route('/'),
+            'create' => Pages\CreateUser::route('/create'),
+            'edit' => Pages\EditUser::route('/{record}/edit'),
+            'view' => Pages\ViewUser::route('/{record}'),
         ];
     }
 }

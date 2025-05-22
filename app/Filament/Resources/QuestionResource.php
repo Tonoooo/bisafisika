@@ -28,17 +28,17 @@ class QuestionResource extends Resource
     {
         return $form
             ->schema([
-                Select::make('bab_id')
-                    ->label('Bab')
-                    ->relationship('bab', 'name')
-                    ->searchable()
-                    ->preload()
-                    ->createOptionForm([
-                        Forms\Components\TextInput::make('name')
-                            ->required()
-                            ->maxLength(255),
-                    ])
-                    ->nullable(),
+                // Select::make('bab_id')
+                //     ->label('Bab')
+                //     ->relationship('bab', 'name')
+                //     ->searchable()
+                //     ->preload()
+                //     ->createOptionForm([
+                //         Forms\Components\TextInput::make('name')
+                //             ->required()
+                //             ->maxLength(255),
+                //     ])
+                //     ->nullable(),
 
                 Forms\Components\Repeater::make('random_variables')
                     ->schema([

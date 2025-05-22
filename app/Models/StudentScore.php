@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class StudentScore extends Model
 {
@@ -30,17 +31,26 @@ class StudentScore extends Model
                 ->where('is_completed', true)
                 ->count();
 
-            Log::info('Updating StudentScore', [
-                'user_id' => $userId,
-                'total_quizzes' => $totalQuizzes,
-                'query' => UserQuiz::where('user_id', $userId)
-                    ->where('is_completed', true)
-                    ->toSql()
+            // Ambil semua score untuk logging
+            $scores = UserQuiz::where('user_id', $userId)
+                ->where('is_completed', true)
+                ->select('quiz_id', 'score', 'created_at')
+                ->get();
+
+            // Log semua score yang ada
+            Log::info('Scores for user ' . $userId, [
+                'scores' => $scores->toArray()
             ]);
 
-            // Hitung total score dari leaderboard
-            $totalScore = Leaderboard::where('user_id', $userId)
-                ->sum('score');
+            // Hitung total score dari semua quiz yang diselesaikan
+            $totalScore = $scores->sum('score');
+
+            // Log hasil perhitungan
+            Log::info('Score calculation for user ' . $userId, [
+                'total_quizzes' => $totalQuizzes,
+                'total_score' => $totalScore,
+                'scores_sum' => $scores->sum('score')
+            ]);
 
             // Hitung rata-rata score
             $averageScore = $totalQuizzes > 0 ? $totalScore / $totalQuizzes : 0;
@@ -55,17 +65,11 @@ class StudentScore extends Model
                 ]
             );
 
-            Log::info('StudentScore updated', [
-                'user_id' => $userId,
-                'student_score' => $studentScore->toArray()
-            ]);
-
             return $studentScore;
         } catch (\Exception $e) {
             Log::error('Error updating StudentScore', [
                 'user_id' => $userId,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'error' => $e->getMessage()
             ]);
             throw $e;
         }
