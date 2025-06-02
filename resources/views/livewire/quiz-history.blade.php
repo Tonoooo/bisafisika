@@ -6,7 +6,10 @@
                     @foreach ($userQuizzes as $userQuiz)
                         <li class="py-4">
                             <a href="{{ route('quiz.results', $userQuiz->id) }}" class="text-lg font-medium text-blue-600 hover:underline">
-                                {{ $userQuiz->quiz->title }} - Taken on {{ $userQuiz->created_at->format('Y-m-d H:i') }}
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">{{ $userQuiz->quiz->title }}</div>
+                                    <div class="text-sm text-gray-500">{{ $userQuiz->created_at->format('d M Y H:i') }} WIB</div>
+                                </td>
                             </a>
                         </li>
                     @endforeach

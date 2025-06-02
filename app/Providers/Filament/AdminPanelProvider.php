@@ -118,12 +118,18 @@ class AdminPanelProvider extends PanelProvider
                         NavigationItem::make('Leaderboard')
                             ->icon('heroicon-o-trophy')
                             ->url(fn (): string => \App\Filament\Resources\LeaderboardResource::getUrl()),
+                        NavigationItem::make('Take Quiz')
+                            ->icon('heroicon-o-academic-cap')
+                            ->url(fn (): string => \App\Filament\Pages\TakeQuiz::getUrl()),
+                        NavigationItem::make('Riwayat Quiz')
+                            ->icon('heroicon-o-clock')
+                            ->url(fn (): string => route('quiz.history')),
                     ]);
                 } else {
                     $items = array_merge($items, [
                         NavigationItem::make('Take Quiz')
                             ->icon('heroicon-o-academic-cap')
-                            ->url(fn (): string => route('quiz.list')),
+                            ->url(fn (): string => \App\Filament\Pages\TakeQuiz::getUrl()),
                         NavigationItem::make('Riwayat Quiz')
                             ->icon('heroicon-o-clock')
                             ->url(fn (): string => route('quiz.history')),

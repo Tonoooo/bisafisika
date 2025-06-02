@@ -18,6 +18,12 @@ class UserQuiz extends Model
         'score'
     ];
 
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
+        'is_completed' => 'boolean',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);

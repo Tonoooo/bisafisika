@@ -105,7 +105,7 @@ class LeaderboardResource extends Resource
                     ->relationship('user.school', 'name')
                     ->searchable()
                     ->preload()
-                    ->visible(fn () => auth()->user()->hasRole('super_admin')),
+                    ->visible(fn () => auth()->user()->roles->contains('name', 'super_admin')),
 
                 Tables\Filters\SelectFilter::make('level')
                     ->label('Tingkat')
@@ -122,7 +122,7 @@ class LeaderboardResource extends Resource
                             })
                         );
                     })
-                    ->visible(fn () => auth()->user()->hasRole('super_admin') || auth()->user()->hasRole('guru')),
+                    ->visible(fn () => auth()->user()->roles->contains('name', 'super_admin') || auth()->user()->roles->contains('name', 'guru')),
 
                 Tables\Filters\SelectFilter::make('class')
                     ->label('Kelas')
@@ -140,7 +140,7 @@ class LeaderboardResource extends Resource
                             })
                         );
                     })
-                    ->visible(fn () => auth()->user()->hasRole('super_admin') || auth()->user()->hasRole('guru')),
+                    ->visible(fn () => auth()->user()->roles->contains('name', 'super_admin') || auth()->user()->roles->contains('name', 'guru')),
             ])
             ->defaultSort('total_score', 'desc')
             ->recordUrl(fn (StudentScore $record): string => route('filament.admin.pages.student-quiz-history', ['userId' => $record->user_id]));
@@ -151,11 +151,18 @@ class LeaderboardResource extends Resource
         $query = parent::getEloquentQuery();
         $user = auth()->user();
 
-        if ($user->hasRole('guru')) {
+        // Filter hanya user dengan role siswa
+        $query->whereHas('user', function ($query) {
+            $query->whereHas('roles', function ($query) {
+                $query->where('name', 'siswa');
+            });
+        });
+
+        if ($user->roles->contains('name', 'guru')) {
             $query->whereHas('user', function ($query) use ($user) {
                 $query->where('school_id', $user->school_id);
             });
-        } elseif ($user->hasRole('siswa')) {
+        } elseif ($user->roles->contains('name', 'siswa')) {
             $query->where(function($q) use ($user) {
                 $q->where('user_id', $user->id)
                   ->orWhere(function($q) use ($user) {

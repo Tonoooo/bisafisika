@@ -6,7 +6,7 @@
     <div class="p-6 bg-white rounded-lg shadow-lg">
         <h1 class="mb-6 text-2xl font-bold text-gray-900">Quiz Result</h1>
         <p class="mb-2 text-lg text-gray-700"><strong>Quiz:</strong> {{ $userQuiz->quiz->title }}</p>
-        <p class="mb-2 text-lg text-gray-700"><strong>Date Taken:</strong> {{ $userQuiz->created_at->format('Y-m-d H:i') }}</p>
+        <p class="mb-2 text-lg text-gray-700"><strong>Tanggal:</strong> {{ $userQuiz->created_at->format('d M Y H:i') }} WIB</p>
         <p class="mb-4 text-lg text-gray-700"><strong>Score:</strong> {{ $score }}</p>
 
         <h2 class="mb-6 text-xl font-bold text-gray-900">Questions and Answers</h2>
