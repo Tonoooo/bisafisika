@@ -4,6 +4,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Exports\LeaderboardExport;
 use App\Filament\Resources\LeaderboardResource\Pages;
 use App\Models\Leaderboard;
 use App\Models\StudentScore;
@@ -16,6 +17,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 // Impor Model
 use Illuminate\Database\Eloquent\Model; // Import class Model
 
@@ -72,6 +74,15 @@ class LeaderboardResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->headerActions([
+                Tables\Actions\Action::make('export')
+                    ->label('Export Excel')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->action(function ($livewire) {
+                        $query = $livewire->getFilteredTableQuery();
+                        return Excel::download(new LeaderboardExport($query), 'leaderboard-' . now()->format('Y-m-d') . '.xlsx');
+                    })
+            ])
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Nama Siswa')
