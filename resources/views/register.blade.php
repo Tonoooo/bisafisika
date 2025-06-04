@@ -16,7 +16,7 @@
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <a href="{{ route('register.student') }}" class="block">
-                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow cursor-pointer h-full transform hover:-translate-y-1 transition-transform">
+                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl cursor-pointer h-full transform hover:-translate-y-1 transition">
                         <div class="text-center">
                             <img src="{{ asset('images/gambar_siswa.png') }}" alt="Student" class="w-40 h-40 mx-auto mb-6">
                             <h2 class="text-2xl font-bold text-gray-800 mb-2">Daftar sebagai Siswa</h2>
@@ -25,7 +25,7 @@
                 </a>
 
                 <a href="{{ route('register.teacher') }}" class="block">
-                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow cursor-pointer h-full transform hover:-translate-y-1 transition-transform">
+                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl cursor-pointer h-full transform hover:-translate-y-1 transition">
                         <div class="text-center">
                             <img src="{{ asset('images/gambar_guru.png') }}" alt="Teacher" class="w-40 h-40 mx-auto mb-6">
                             <h2 class="text-2xl font-bold text-gray-800 mb-2">Daftar sebagai Guru</h2>
