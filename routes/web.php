@@ -26,7 +26,7 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::get('/', function () {
-    return redirect('/admin');
+    return view('landing');
 });
 
 Route::get('/register', [RegisterController::class, 'showForm'])->name('register');
