@@ -20,6 +20,11 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
+// Impor widget kustom yang baru dibuat
+use App\Filament\Widgets\DashboardButtonsWidget;
+use App\Filament\Widgets\TopStudentsLeaderboardWidget;
+use App\Filament\Pages\Dashboard;
+
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
@@ -38,16 +43,17 @@ class AdminPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
-                Pages\Dashboard::class,
+                Dashboard::class,
             ])
             ->plugins([
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                DashboardButtonsWidget::class,
+                TopStudentsLeaderboardWidget::class,
             ])
+            
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
@@ -140,6 +146,7 @@ class AdminPanelProvider extends PanelProvider
                 }
 
                 return $builder->items($items);
-            });
+            })
+            ->darkMode(false);
     }
 }
