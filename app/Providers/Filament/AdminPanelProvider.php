@@ -22,8 +22,6 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 // Impor widget kustom yang baru dibuat
 use App\Filament\Widgets\DashboardButtonsWidget;
-use App\Filament\Widgets\TopStudentsLeaderboardWidget;
-use App\Filament\Pages\Dashboard;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -43,15 +41,16 @@ class AdminPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
-                Dashboard::class,
+                // Menggunakan halaman dashboard default Filament
+                \Filament\Pages\Dashboard::class,
             ])
             ->plugins([
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
             ])
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
+            //->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
+                // Hanya daftarkan DashboardButtonsWidget
                 DashboardButtonsWidget::class,
-                TopStudentsLeaderboardWidget::class,
             ])
             
             ->middleware([
@@ -82,7 +81,7 @@ class AdminPanelProvider extends PanelProvider
                 $items = [
                     NavigationItem::make('Dashboard')
                         ->icon('heroicon-o-home')
-                        ->url(fn (): string => Pages\Dashboard::getUrl())
+                        ->url(fn (): string => \Filament\Pages\Dashboard::getUrl())
                         ->visible(fn () => $user->roles->contains('name', 'super_admin') || 
                                          $user->roles->contains('name', 'guru') || 
                                          $user->roles->contains('name', 'siswa')),

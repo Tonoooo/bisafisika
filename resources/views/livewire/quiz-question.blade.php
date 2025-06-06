@@ -1,7 +1,7 @@
 <!-- resources/views/livewire/quiz-question.blade.php -->
 <div>
-    <div class="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
-        <div class="flex items-center justify-between px-4 py-2">
+    <div class="fixed top-0 left-0 right-0 z-50 border-b border-gray-200" style="background-color: #f2e2b1f0;">
+        <div class="flex items-center justify-between px-4 py-2" style="background-color: #f2e2b1f0;">
             <button wire:click="cancelQuiz" class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-yellow-700 bg-yellow-100 rounded-lg hover:bg-yellow-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
                 <x-heroicon-o-x-circle class="w-5 h-5 mr-1.5" />
                 Cancel
@@ -43,7 +43,7 @@
     <div class="pt-4">
         <div class="max-w-4xl py-12 mx-auto sm:px-6 lg:px-8">
             <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-            <div class="p-6 bg-white shadow sm:rounded-lg">
+            <div class="p-6 shadow sm:rounded-lg" style="background-color: #f2e2b1f0;">
                 <h1 class="mb-4 text-2xl font-semibold text-gray-900">{{ $question->userQuiz->quiz->title }}</h1>
                 <p class="mb-6 text-gray-600">Question {{ $questionIndex + 1 }} of {{ $totalQuestions }}</p>
                 <form wire:submit.prevent="submitAnswer">

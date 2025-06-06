@@ -1,59 +1,68 @@
 <x-filament::widget>
-    <x-filament::card>
-        <div style="text-align: center; margin-bottom: 1rem;">
-            <h2 class="text-2xl font-bold">Selamat Datang</h2>
-        </div>
-        {{-- Gambar elang dari direktori public --}}
-        <div style="">
-            <img src="{{ asset('images/elang.png') }}" alt="Gambar Elang" style="max-width: 100px; height: auto; margin: 0 auto;">
-        </div>
-        
-        {{-- Menggunakan flexbox untuk menata tombol-tombol secara horizontal --}}
-        <div class="flex flex-row items-center justify-center space-x-4 p-4">
-            {{-- Wadah untuk Tombol Take Quiz --}}
-            {{-- Gunakan flex-shrink-0 agar tombol tidak menyusut di ruang sempit --}}
-            {{-- Tambahkan lebar agar rapi --}}
-            <div class="flex-shrink-0 border border-gray-300 dark:border-gray-700 rounded-lg p-4 flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800 text-center w-1/3 me-5" style="margin-right: 10px; width: 100px;">
-                <a href="{{ url('/admin/take-quiz') }}" class="flex flex-col items-center justify-center w-full h-full text-gray-700 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400 transition">
-                    {{-- Ikon Kuis --}}
-                    <x-filament::icon
-                        icon="heroicon-o-play"
-                        class="h-5 w-5 mb-2" {{-- Ukuran ikon sesuai penyesuaian terakhir --}}
-                    />
-                    {{-- Teks Kuis --}}
-                    <p class="text-sm font-medium">Kuis</p>
-                </a>
-            </div>
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
 
-            {{-- Wadah untuk Tombol Leaderboard --}}
-            {{-- Gunakan flex-shrink-0 agar tombol tidak menyusut di ruang sempit --}}
-             {{-- Tambahkan lebar agar rapi --}}
-            <div class="flex-shrink-0 border border-gray-300 dark:border-gray-700 rounded-lg p-4 flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800 text-center w-1/3" style="margin-right: 10px; width: 100px;">
-                <a href="{{ url('/admin/leaderboards') }}" class="flex flex-col items-center justify-center w-full h-full text-gray-700 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400 transition">
-                    {{-- Ikon Peringkat --}}
-                    <x-filament::icon
-                        icon="heroicon-o-trophy"
-                        class="h-5 w-5 mb-2" {{-- Ukuran ikon sesuai penyesuaian terakhir --}}
-                    />
-                    {{-- Teks Peringkat --}}
-                    <p class="text-sm font-medium">Peringkat</p>
-                </a>
-            </div>
+        {{-- KOLOM KIRI: KARTU SELAMAT DATANG & AKSI --}}
+        <div class="lg:col-span-2">
+            
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden h-full flex flex-col">
 
-            {{-- Wadah untuk Tombol Riwayat Quiz --}}
-            {{-- Gunakan flex-shrink-0 agar tombol tidak menyusut di ruang sempit --}}
-             {{-- Tambahkan lebar agar rapi --}}
-            <div class="flex-shrink-0 border border-gray-300 dark:border-gray-700 rounded-lg p-4 flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800 text-center w-1/3" style="width: 100px;">
-                 <a href="{{ url('/quiz/history') }}" class="flex flex-col items-center justify-center w-full h-full text-gray-700 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400 transition">
-                    {{-- Ikon Riwayat --}}
-                    <x-filament::icon
-                        icon="heroicon-o-clock"
-                        class="h-5 w-5 mb-2" {{-- Ukuran ikon sesuai penyesuaian terakhir --}}
-                    />
-                    {{-- Teks Riwayat --}}
-                    <p class="text-sm font-medium">Riwayat</p>
-                 </a>
+                {{-- [DIPERBAIKI] Banner Atas dengan Gradien yang Lebih Aman & Layout yang Disesuaikan --}}
+                {{-- Menggunakan gradien dari primary-500 ke primary-600 yang pasti ada di Filament --}}
+                <div class="relative p-6 bg-gradient-to-br from-primary-500 to-primary-600 ">
+                    <div class="relative z-10">
+                        <h2 class="text-3xl font-bold">Selamat Datang,</h2>
+                        <p class="text-xl font-light -mt-1">{{ auth()->user()->name }}!</p>
+                        <p class="mt-2 text-sm text-primary-200 max-w-xs">Siap taklukkan tantangan fisika hari ini dan jadi yang terbaik?</p>
+                    </div>
+
+                    {{-- [DIPERBAIKI] Posisi dan Ukuran Gambar Elang Disesuaikan --}}
+                    {{-- Posisi diatur agar tidak keluar dari banner dan ukurannya lebih pas --}}
+                    {{-- Transformasi menggunakan nilai negatif untuk menarik gambar ke dalam, bukan mendorong keluar --}}
+                    {{-- <img src="{{ asset('images/elang.png') }}" alt="Elang BisaFisika" 
+                         class="right-0 w-24 h-auto pointer-events-none " 
+                         style="filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3)); width: 250px "> --}}
+
+                </div>
+
+                {{-- Wadah Tombol Aksi (Tidak ada perubahan, posisinya akan benar sekarang) --}}
+                <div class="p-6 flex-grow flex flex-col">
+                    <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4">Aksi Cepat</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                        {{-- Tombol 1: Mulai Kuis --}}
+                        <a href="{{ url('/admin/take-quiz') }}" class="group flex flex-col justify-center items-center p-4 bg-primary-500 hover:bg-primary-600  rounded-lg shadow-md transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-xl">
+                            <x-filament::icon icon="heroicon-o-play-circle" class="w-8 h-8 mb-2 transition-transform duration-300 group-hover:scale-110" />
+                            <p class="font-semibold">Mulai Kuis</p>
+                        </a>
+    
+                        {{-- Tombol 2: Papan Peringkat --}}
+                        <a href="{{ url('/admin/leaderboards') }}" class="group flex flex-col justify-center items-center p-4 bg-gray-100 dark:bg-gray-700/80 hover:bg-white dark:hover:bg-gray-700 rounded-lg shadow-md transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg">
+                            <x-filament::icon icon="heroicon-o-trophy" class="w-8 h-8 mb-2 text-primary-500 dark:text-primary-400 transition-transform duration-300 group-hover:scale-110" />
+                            <p class="font-semibold text-gray-800 dark:text-gray-200">Papan Peringkat</p>
+                        </a>
+    
+                        {{-- Tombol 3: Riwayat Kuis --}}
+                        <a href="{{ url('/quiz/history') }}" class="group flex flex-col justify-center items-center p-4 bg-gray-100 dark:bg-gray-700/80 hover:bg-white dark:hover:bg-gray-700 rounded-lg shadow-md transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg">
+                            <x-filament::icon icon="heroicon-o-clock" class="w-8 h-8 mb-2 text-primary-500 dark:text-primary-400 transition-transform duration-300 group-hover:scale-110" />
+                            <p class="font-semibold text-gray-800 dark:text-gray-200">Riwayat Kuis</p>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
-    </x-filament::card>
+    
+        {{-- KOLOM KANAN: LEADERBOARD --}}
+        <div class="lg:col-span-3">
+             {{-- Bagian ini tidak perlu diubah, akan tampil benar jika kolom kiri sudah benar --}}
+            <x-filament::card class="h-full flex flex-col">
+                 <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Papan Peringkat Teratas</h3>
+                 <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Lihat posisi para jawara fisika saat ini.</p>
+                 
+                 <div class="mt-4">
+                    {{ $this->table }}
+                 </div>
+            </x-filament::card>
+        </div>
+    
+    </div>
 </x-filament::widget>

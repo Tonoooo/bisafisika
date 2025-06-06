@@ -27,7 +27,7 @@
                 </div>
                 <div class="hidden sm:block sm:ml-6">
                     <div class="flex space-x-4">
-                        <a href="/" class="px-3 py-2 text-sm font-medium rounded-md bg-blue-600 text-white hover:bg-blue-700">
+                        <a href="/admin/" class="px-3 py-2 text-sm font-medium rounded-md bg-blue-600 text-white hover:bg-blue-700">
                             <x-heroicon-o-home class="w-4 h-4 inline-block mr-1" />Kembali ke Beranda
                         </a>
                     </div>

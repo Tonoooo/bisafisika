@@ -1,24 +1,24 @@
 <div>
-    <form wire:submit.prevent="register">
+    <form wire:submit.prevent="register" class="space-y-5">
         <input type="hidden" wire:model="role" value="siswa">
         <div>
-            <label for="name" class="block text-sm font-medium text-gray-700">Nama</label>
-            <input type="text" wire:model="name" id="name" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required />
+            <label for="name" class="block text-sm font-semibold text-gray-700 dark:text-gray-800 mb-1">Nama</label>
+            <input type="text" wire:model="name" id="name" class="block w-full border-gray-300 rounded-lg shadow-sm p-3 bg-white focus:border-primary-500 focus:ring-primary-500" required />
             @error('name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
         </div>
-        <div class="mt-4">
-            <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-            <input type="email" wire:model="email" id="email" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required />
+        <div>
+            <label for="email" class="block text-sm font-semibold text-gray-700 dark:text-gray-800 mb-1">Email</label>
+            <input type="email" wire:model="email" id="email" class="block w-full border-gray-300 rounded-lg shadow-sm p-3 bg-white focus:border-primary-500 focus:ring-primary-500" required />
             @error('email') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
         </div>
-        <div class="mt-4">
-            <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-            <input type="password" wire:model="password" id="password" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required />
+        <div>
+            <label for="password" class="block text-sm font-semibold text-gray-700 dark:text-gray-800 mb-1">Password</label>
+            <input type="password" wire:model="password" id="password" class="block w-full border-gray-300 rounded-lg shadow-sm p-3 bg-white focus:border-primary-500 focus:ring-primary-500" required />
             @error('password') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
         </div>
-        <div class="mt-4">
-            <label for="school_id" class="block text-sm font-medium text-gray-700">Sekolah</label>
-            <select wire:model="school_id" id="school_id" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required>
+        <div>
+            <label for="school_id" class="block text-sm font-semibold text-gray-700 dark:text-gray-800 mb-1">Sekolah</label>
+            <select wire:model="school_id" id="school_id" class="block w-full border-gray-300 rounded-lg shadow-sm p-3 bg-white focus:border-primary-500 focus:ring-primary-500" required>
                 <option value="">Pilih Sekolah</option>
                 @foreach ($schools as $school)
                     <option value="{{ $school->id }}">{{ $school->name }}</option>
@@ -26,9 +26,9 @@
             </select>
             @error('school_id') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
         </div>
-        <div class="mt-4">
-            <label for="level" class="block text-sm font-medium text-gray-700">Tingkat</label>
-            <select wire:model="level" id="level" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required>
+        <div>
+            <label for="level" class="block text-sm font-semibold text-gray-700 dark:text-gray-800 mb-1">Tingkat</label>
+            <select wire:model="level" id="level" class="block w-full border-gray-300 rounded-lg shadow-sm p-3 bg-white focus:border-primary-500 focus:ring-primary-500" required>
                 <option value="">Pilih Tingkat</option>
                 <option value="1">1</option>
                 <option value="2">2</option>
@@ -36,9 +36,9 @@
             </select>
             @error('level') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
         </div>
-        <div class="mt-4">
-            <label for="class" class="block text-sm font-medium text-gray-700">Kelas</label>
-            <select wire:model="class" id="class" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required>
+        <div>
+            <label for="class" class="block text-sm font-semibold text-gray-700 dark:text-gray-800 mb-1">Kelas</label>
+            <select wire:model="class" id="class" class="block w-full border-gray-300 rounded-lg shadow-sm p-3 bg-white focus:border-primary-500 focus:ring-primary-500" required>
                 <option value="">Pilih Kelas</option>
                 @foreach (range('a', 'z') as $letter)
                     <option value="{{ $letter }}">{{ strtoupper($letter) }}</option>
@@ -46,10 +46,13 @@
             </select>
             @error('class') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
         </div>
-        <div class="mt-6">
-            <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
+        <div class="pt-4">
+            <button type="submit" class="w-full p-3 rounded-md text-white font-semibold hover:opacity-90 transition shadow-md" style="background-color: #d5c7a3;">
                 Daftar
             </button>
+        </div>
+        <div class="mt-4 text-center">
+            <p class="text-sm text-gray-600">Sudah punya akun? <a href="{{ route('filament.admin.auth.login') }}" class="text-primary-600 hover:underline bold" style="color: #5c70ca; font-weight: bold;">Login di sini</a></p>
         </div>
     </form>
 </div> 
