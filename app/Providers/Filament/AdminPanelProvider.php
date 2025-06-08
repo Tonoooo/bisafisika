@@ -22,6 +22,7 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 // Impor widget kustom yang baru dibuat
 use App\Filament\Widgets\DashboardButtonsWidget;
+use App\Filament\Pages\QuizHistory;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -42,7 +43,8 @@ class AdminPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
                 // Menggunakan halaman dashboard default Filament
-                \Filament\Pages\Dashboard::class,
+                Pages\Dashboard::class,
+                QuizHistory::class,
             ])
             ->plugins([
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
@@ -110,7 +112,7 @@ class AdminPanelProvider extends PanelProvider
                             ->url(fn (): string => \App\Filament\Resources\SchoolResource::getUrl()),
                         NavigationItem::make('Riwayat Quiz')
                             ->icon('heroicon-o-clock')
-                            ->url(fn (): string => route('quiz.history')),
+                            ->url(fn (): string => \App\Filament\Pages\QuizHistory::getUrl()),
                         NavigationItem::make('Leaderboard')
                             ->icon('heroicon-o-trophy')
                             ->url(fn (): string => \App\Filament\Resources\LeaderboardResource::getUrl()),
@@ -128,7 +130,7 @@ class AdminPanelProvider extends PanelProvider
                             ->url(fn (): string => \App\Filament\Pages\TakeQuiz::getUrl()),
                         NavigationItem::make('Riwayat Quiz')
                             ->icon('heroicon-o-clock')
-                            ->url(fn (): string => route('quiz.history')),
+                            ->url(fn (): string => \App\Filament\Pages\QuizHistory::getUrl()),
                     ]);
                 } else {
                     $items = array_merge($items, [
@@ -137,7 +139,7 @@ class AdminPanelProvider extends PanelProvider
                             ->url(fn (): string => \App\Filament\Pages\TakeQuiz::getUrl()),
                         NavigationItem::make('Riwayat Quiz')
                             ->icon('heroicon-o-clock')
-                            ->url(fn (): string => route('quiz.history')),
+                            ->url(fn (): string => \App\Filament\Pages\QuizHistory::getUrl()),
                         ]);
                 }
 
