@@ -34,3 +34,5 @@ Route::get('/register/student', [RegisterController::class, 'showStudentForm'])-
 Route::get('/register/teacher', [RegisterController::class, 'showTeacherForm'])->name('register.teacher');
 Route::get('/register/lecturer', [RegisterController::class, 'showLecturerForm'])->name('register.lecturer');
 Route::post('/register', [RegisterController::class, 'register'])->name('register.submit');
+
+Route::get('/questions/preview', \App\Livewire\QuestionPreviewer::class)->name('questions.preview');

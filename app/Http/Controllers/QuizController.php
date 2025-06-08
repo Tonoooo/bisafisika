@@ -6,9 +6,12 @@ use App\Models\Quiz;
 use App\Models\UserQuiz;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use App\Traits\ProcessesQuestionData;
 
 class QuizController extends Controller
 {
+    use ProcessesQuestionData;
+
     private $constants = [
         'g' => 9.8,
         'pi' => M_PI,
@@ -36,9 +39,10 @@ class QuizController extends Controller
         shuffle($questions);
 
         $questions = collect($questions)->map(function ($question) use ($userQuiz) {
-            $randomValues = $this->generateRandomValues($question->content, $question->rumus, $question);
+            // Pass random_variables configuration from question model
+            $randomValues = $this->generateRandomValues($question->content, $question->rumus, $question->random_variables);
             $questionText = $this->replacePlaceholders($question->content, $randomValues);
-            $rumusValues = $this->processRumus($question->rumus, $randomValues, $question);
+            $rumusValues = $this->processRumus($question->rumus, $randomValues, $question->precision ?? 3);
             $answers = $this->replacePlaceholdersInAnswers($question->answers, $randomValues, $rumusValues);
             shuffle($answers);
 

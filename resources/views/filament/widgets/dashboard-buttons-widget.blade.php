@@ -30,7 +30,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                         {{-- Tombol 1: Mulai Kuis --}}
-                        <a href="{{ url('/admin/quiz') }}" class="group flex flex-col justify-center items-center p-4 bg-gray-100 dark:bg-gray-700/80 hover:bg-white dark:hover:bg-gray-700 rounded-lg shadow-md transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg">
+                        <a href="{{ url('/admin/take-quiz') }}" class="group flex flex-col justify-center items-center p-4 bg-gray-100 dark:bg-gray-700/80 hover:bg-white dark:hover:bg-gray-700 rounded-lg shadow-md transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg">
                             <x-filament::icon icon="heroicon-o-academic-cap" class="w-8 h-8 mb-2 text-primary-500 dark:text-primary-400 transition-transform duration-300 group-hover:scale-110" />
                             <p class="font-semibold text-gray-800 dark:text-gray-200">Mulai Kuis</p>
                         </a>

@@ -1,0 +1,10 @@
+/* resources/css/filament/admin/theme.css */
+
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@config 'tailwind.config.js';
+
+body {
+    /* Gunakan !important untuk menimpa style default Filament */
+    background-color: #F4E8CA !important;
+}

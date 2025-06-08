@@ -5,10 +5,23 @@ namespace App\Filament\Resources\QuestionResource\Pages;
 use App\Filament\Resources\QuestionResource;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Log;
+use Filament\Actions\Action;
+use Illuminate\Support\Facades\Session;
 
 class CreateQuestion extends CreateRecord
 {
     protected static string $resource = QuestionResource::class;
+
+    public function mount(): void
+    {
+        parent::mount();
+
+        if (Session::has('question_preview_data')) {
+            $data = Session::get('question_preview_data');
+            $this->form->fill($data);
+            Session::forget('question_preview_data');
+        }
+    }
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
@@ -51,5 +64,20 @@ class CreateQuestion extends CreateRecord
         if (!isset($data['random_variables']) || empty(array_filter($data['random_variables']))) {
             throw new \Exception('Random variables cannot be empty.');
         }
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('previewQuestion')
+                ->label('Preview Soal')
+                ->color('info')
+                ->icon('heroicon-o-eye')
+                ->action(function () {
+                    $data = $this->form->getState();
+                    Session::put('question_preview_data', $data);
+                    return redirect()->route('questions.preview');
+                }),
+        ];
     }
 }
