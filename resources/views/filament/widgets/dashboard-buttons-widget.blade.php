@@ -30,19 +30,20 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                         {{-- Tombol 1: Mulai Kuis --}}
-                        <a href="{{ url('/admin/take-quiz') }}" class="group flex flex-col justify-center items-center p-4 bg-primary-500 hover:bg-primary-600  rounded-lg shadow-md transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-xl">
-                            <x-filament::icon icon="heroicon-o-play-circle" class="w-8 h-8 mb-2 transition-transform duration-300 group-hover:scale-110" />
-                            <p class="font-semibold">Mulai Kuis</p>
+                        <a href="{{ url('/admin/quiz') }}" class="group flex flex-col justify-center items-center p-4 bg-gray-100 dark:bg-gray-700/80 hover:bg-white dark:hover:bg-gray-700 rounded-lg shadow-md transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg">
+                            <x-filament::icon icon="heroicon-o-academic-cap" class="w-8 h-8 mb-2 text-primary-500 dark:text-primary-400 transition-transform duration-300 group-hover:scale-110" />
+                            <p class="font-semibold text-gray-800 dark:text-gray-200">Mulai Kuis</p>
                         </a>
     
-                        {{-- Tombol 2: Papan Peringkat --}}
+                        @if(auth()->user()->hasRole('teacher'))
                         <a href="{{ url('/admin/leaderboards') }}" class="group flex flex-col justify-center items-center p-4 bg-gray-100 dark:bg-gray-700/80 hover:bg-white dark:hover:bg-gray-700 rounded-lg shadow-md transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg">
                             <x-filament::icon icon="heroicon-o-trophy" class="w-8 h-8 mb-2 text-primary-500 dark:text-primary-400 transition-transform duration-300 group-hover:scale-110" />
                             <p class="font-semibold text-gray-800 dark:text-gray-200">Papan Peringkat</p>
                         </a>
+                        @endif
     
                         {{-- Tombol 3: Riwayat Kuis --}}
-                        <a href="{{ url('/quiz/history') }}" class="group flex flex-col justify-center items-center p-4 bg-gray-100 dark:bg-gray-700/80 hover:bg-white dark:hover:bg-gray-700 rounded-lg shadow-md transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg">
+                        <a href="{{ url('/admin/quiz-history') }}" class="group flex flex-col justify-center items-center p-4 bg-gray-100 dark:bg-gray-700/80 hover:bg-white dark:hover:bg-gray-700 rounded-lg shadow-md transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg">
                             <x-filament::icon icon="heroicon-o-clock" class="w-8 h-8 mb-2 text-primary-500 dark:text-primary-400 transition-transform duration-300 group-hover:scale-110" />
                             <p class="font-semibold text-gray-800 dark:text-gray-200">Riwayat Kuis</p>
                         </a>
@@ -52,8 +53,7 @@
         </div>
     
         {{-- KOLOM KANAN: LEADERBOARD --}}
-        <div class="lg:col-span-3">
-             {{-- Bagian ini tidak perlu diubah, akan tampil benar jika kolom kiri sudah benar --}}
+        {{-- <div class="lg:col-span-3">
             <x-filament::card class="h-full flex flex-col">
                  <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Papan Peringkat Teratas</h3>
                  <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Lihat posisi para jawara fisika saat ini.</p>
@@ -62,7 +62,7 @@
                     {{ $this->table }}
                  </div>
             </x-filament::card>
-        </div>
+        </div> --}}
     
     </div>
 </x-filament::widget>

@@ -138,10 +138,7 @@ class AdminPanelProvider extends PanelProvider
                         NavigationItem::make('Riwayat Quiz')
                             ->icon('heroicon-o-clock')
                             ->url(fn (): string => route('quiz.history')),
-                        NavigationItem::make('Leaderboard')
-                            ->icon('heroicon-o-trophy')
-                            ->url(fn (): string => \App\Filament\Resources\LeaderboardResource::getUrl()),
-                    ]);
+                        ]);
                 }
 
                 return $builder->items($items);
