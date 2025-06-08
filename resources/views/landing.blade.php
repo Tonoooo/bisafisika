@@ -72,7 +72,7 @@
 
             <div class="lg:w-1/2 flex justify-center lg:justify-end relative">
                 <div class="absolute w-4/5 h-4/5 bg-brand-secondary rounded-full -z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-60"></div>
-                <img src="{{ asset('images/elang.png') }}" alt="Gambar Elang BisaFisika" class="w-4/5 max-w-sm lg:max-w-md h-auto drop-shadow-xl">
+                <img src="{{ asset('images/einstein.png') }}" alt="Gambar einstein BisaFisika" class="w-4/5 max-w-sm lg:max-w-md h-auto drop-shadow-xl">
             </div>
         </section>
 
@@ -89,9 +89,20 @@
                             <path d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0l-.07.002z" />
                         </svg>
                     </div>
-                    <h3 class="text-2xl font-bold text-dark mb-2">Materi Interaktif</h3>
-                    <p class="text-light leading-relaxed">Pelajari konsep fisika dengan cara yang menarik dan mudah dipahami.</p>
+                    <h3 class="text-2xl font-bold text-dark mb-2">Beragam Bab Fisika yang Menarik</h3>
+                    <p class="text-light leading-relaxed">Terdapat banyak bab fisika yang dapat kamu gunakan untuk belatih.</p>
                 </div>
+
+                <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all-smooth text-center">
+                    <div class="mx-auto w-20 h-20 flex items-center justify-center bg-brand-secondary rounded-full mb-6">
+                        <svg class="w-10 h-10 text-dark" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-dark mb-2">Level soal </h3>
+                    <p class="text-light leading-relaxed">Tantang dirimu dalam ujian dengan level soal yang beragam</p>
+                </div>
+
                 <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all-smooth text-center">
                      <div class="mx-auto w-20 h-20 flex items-center justify-center bg-brand-secondary rounded-full mb-6">
                         <svg class="w-10 h-10 text-dark" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -101,15 +112,7 @@
                     <h3 class="text-2xl font-bold text-dark mb-2">Bank Soal Bervariasi</h3>
                     <p class="text-light leading-relaxed">Latihan soal dari berbagai topik untuk menguji dan memperdalam pemahamanmu.</p>
                 </div>
-                 <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all-smooth text-center">
-                    <div class="mx-auto w-20 h-20 flex items-center justify-center bg-brand-secondary rounded-full mb-6">
-                        <svg class="w-10 h-10 text-dark" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                        </svg>
-                    </div>
-                    <h3 class="text-2xl font-bold text-dark mb-2">Leaderboard & Ujian</h3>
-                    <p class="text-light leading-relaxed">Tantang dirimu dalam ujian, dan lihat peringkatmu di antara siswa lain.</p>
-                </div>
+                
             </div>
         </section>
 

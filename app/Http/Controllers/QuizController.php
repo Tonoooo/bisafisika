@@ -216,8 +216,8 @@ class QuizController extends Controller
                     // 5. Perbaiki angka desimal yang memiliki lebih dari satu titik
                     $expression = preg_replace('/([0-9]+)\.([0-9]+)\.([0-9]+)/', '$1.$2$3', $expression);
 
-                    // 6. Evaluasi fungsi trigonometri
-                    while (preg_match('/(sin|cos|tan)\(([0-9\.\*\/\+\-]+)\)/', $expression, $matches)) {
+                    // 6. Evaluasi fungsi trigonometri dan sqrt
+                    while (preg_match('/(sin|cos|tan|sqrt)\(([0-9\.\*\/\+\-]+)\)/', $expression, $matches)) {
                         $function = $matches[1];
                         $arg = $matches[2];
                         
@@ -225,17 +225,31 @@ class QuizController extends Controller
                         $argValue = eval('return ' . $arg . ';');
                         
                         // Konversi ke radian jika perlu
-                        if (strpos($arg, 'pi/180') !== false) {
+                        if ($function !== 'sqrt' && strpos($arg, 'pi/180') !== false) {
                             $argValue = $argValue * M_PI / 180;
                         }
                         
-                        // Evaluasi fungsi trigonometri
-                        $result = call_user_func($function, $argValue);
+                        // Evaluasi fungsi
+                        if ($function === 'sqrt') {
+                            if ($argValue < 0) {
+                                // Gunakan nilai absolut untuk menghindari error
+                                $result = sqrt(abs($argValue));
+                                Log::warning('Negative value in sqrt, using absolute value', [
+                                    'original_value' => $argValue,
+                                    'absolute_value' => abs($argValue),
+                                    'result' => $result
+                                ]);
+                            } else {
+                                $result = sqrt($argValue);
+                            }
+                        } else {
+                            $result = call_user_func($function, $argValue);
+                        }
                         
                         // Ganti ekspresi dengan hasil
                         $expression = str_replace($matches[0], $result, $expression);
                         
-                        Log::info('Evaluated trigonometric function', [
+                        Log::info('Evaluated function', [
                             'function' => $function,
                             'argument' => $arg,
                             'argument_value' => $argValue,
@@ -339,8 +353,8 @@ class QuizController extends Controller
             // 5. Perbaiki angka desimal yang memiliki lebih dari satu titik
             $expression = preg_replace('/([0-9]+)\.([0-9]+)\.([0-9]+)/', '$1.$2$3', $expression);
 
-            // 6. Evaluasi fungsi trigonometri
-            while (preg_match('/(sin|cos|tan)\(([0-9\.\*\/\+\-]+)\)/', $expression, $matches)) {
+            // 6. Evaluasi fungsi trigonometri dan sqrt
+            while (preg_match('/(sin|cos|tan|sqrt)\(([0-9\.\*\/\+\-]+)\)/', $expression, $matches)) {
                 $function = $matches[1];
                 $arg = $matches[2];
                 
@@ -348,17 +362,31 @@ class QuizController extends Controller
                 $argValue = eval('return ' . $arg . ';');
                 
                 // Konversi ke radian jika perlu
-                if (strpos($arg, 'pi/180') !== false) {
+                if ($function !== 'sqrt' && strpos($arg, 'pi/180') !== false) {
                     $argValue = $argValue * M_PI / 180;
                 }
                 
-                // Evaluasi fungsi trigonometri
-                $result = call_user_func($function, $argValue);
+                // Evaluasi fungsi
+                if ($function === 'sqrt') {
+                    if ($argValue < 0) {
+                        // Gunakan nilai absolut untuk menghindari error
+                        $result = sqrt(abs($argValue));
+                        Log::warning('Negative value in sqrt, using absolute value', [
+                            'original_value' => $argValue,
+                            'absolute_value' => abs($argValue),
+                            'result' => $result
+                        ]);
+                    } else {
+                        $result = sqrt($argValue);
+                    }
+                } else {
+                    $result = call_user_func($function, $argValue);
+                }
                 
                 // Ganti ekspresi dengan hasil
                 $expression = str_replace($matches[0], $result, $expression);
                 
-                Log::info('Evaluated trigonometric function', [
+                Log::info('Evaluated function', [
                     'function' => $function,
                     'argument' => $arg,
                     'argument_value' => $argValue,
