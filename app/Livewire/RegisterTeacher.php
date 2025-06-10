@@ -16,22 +16,29 @@ class RegisterTeacher extends Component
     public $school_id;
     public $role = 'guru';
 
-    protected $rules = [
-        'name' => 'required|min:3',
-        'email' => 'required|email|unique:users',
-        'password' => 'required|min:8',
-        'school_id' => 'required|exists:schools,id',
-    ];
+    protected function rules()
+    {
+        return [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8',
+            'school_id' => 'nullable',
+        ];
+    }
 
     public function register()
     {
-        $this->validate();
+        $validatedData = $this->validate();
+
+        if ($validatedData['school_id'] === '') {
+            $validatedData['school_id'] = null;
+        }
 
         $user = User::create([
-            'name' => $this->name,
-            'email' => $this->email,
-            'password' => Hash::make($this->password),
-            'school_id' => $this->school_id,
+            'name' => $validatedData['name'],
+            'email' => $validatedData['email'],
+            'password' => Hash::make($validatedData['password']),
+            'school_id' => $validatedData['school_id'],
             'status' => 'pending',
         ]);
 

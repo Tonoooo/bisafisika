@@ -42,11 +42,15 @@ class QuestionPreviewer extends Component
     public function generatePreview()
     {
         // Generate random values based on the provided ranges
-        $randomValues = $this->generateRandomValues($this->questionContent, $this->rumus, $this->randomVariables);
+        $randomValues = $this->generateRandomValues($this->questionContent, $this->rumus, (object)[
+            'random_ranges' => $this->randomVariables
+        ]);
         Log::info('Previewer Generated Random Values', ['values' => $randomValues]);
 
         // Process rumus to get calculated variables
-        $rumusValues = $this->processRumus($this->rumus, $randomValues);
+        $rumusValues = $this->processRumus($this->rumus, $randomValues, (object)[
+            'precision' => 3
+        ]);
         Log::info('Previewer Processed Rumus Values', ['values' => $rumusValues]);
 
         // Replace placeholders in question content

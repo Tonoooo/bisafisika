@@ -54,7 +54,7 @@ class Question extends Model
                     'variabel' => $variabel,
                     'min_value' => floatval($parts[1]),
                     'max_value' => floatval($parts[2]),
-                    'type' => $parts[3],
+                    'type' => strtolower(trim($parts[3])),
                 ];
                 Log::info('Successfully Parsed Variable at index ' . $index, ['variable' => $variables[count($variables) - 1]]);
             } else {

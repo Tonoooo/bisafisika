@@ -11,7 +11,7 @@ trait ProcessesQuestionData
         'pi' => M_PI,
     ];
 
-    protected function generateRandomValues($content, $rumus, $randomRangesConfig)
+    protected function generateRandomValues($content, $rumus, $question)
     {
         $randomValues = [];
 
@@ -33,14 +33,21 @@ trait ProcessesQuestionData
         $placeholders = array_unique($placeholders);
 
         $randomRanges = [];
-        if ($randomRangesConfig) {
-            foreach ($randomRangesConfig as $range) {
-                 if (isset($range['variabel']) && isset($range['min_value']) && isset($range['max_value']) && isset($range['type'])) {
-                    $randomRanges['%' . $range['variabel'] . '%'] = [
+        if (isset($question->random_ranges) && is_array($question->random_ranges)) {
+            foreach ($question->random_ranges as $range) {
+                if (empty($range)) continue;
+                
+                $variabel = trim($range['variabel'] ?? '');
+                if ($variabel && isset($range['min_value']) && isset($range['max_value'])) {
+                    $randomRanges['%' . $variabel . '%'] = [
                         'min_value' => floatval($range['min_value']),
                         'max_value' => floatval($range['max_value']),
-                        'type' => $range['type'],
+                        'type' => strtolower(trim($range['type'] ?? 'integer')),
                     ];
+                    Log::info('Added random range', [
+                        'variabel' => $variabel,
+                        'range' => $randomRanges['%' . $variabel . '%']
+                    ]);
                 }
             }
         }
@@ -50,22 +57,53 @@ trait ProcessesQuestionData
                 continue;
             }
 
-            if (isset($randomRanges[$placeholder])) {
-                $min = floatval($randomRanges[$placeholder]['min_value']);
-                $max = floatval($randomRanges[$placeholder]['max_value']);
-                $type = $randomRanges[$placeholder]['type'] ?? 'integer';
+            $cleanPlaceholder = trim($placeholder, '%');
+            $matchingRange = null;
+            
+            foreach ($randomRanges as $rangeKey => $range) {
+                if (trim($rangeKey, '%') === $cleanPlaceholder) {
+                    $matchingRange = $range;
+                    break;
+                }
+            }
+
+            if ($matchingRange) {
+                $min = floatval($matchingRange['min_value']);
+                $max = floatval($matchingRange['max_value']);
+                $type = strtolower(trim($matchingRange['type']));
 
                 if ($min > $max) {
                     [$min, $max] = [$max, $min];
                 }
 
                 if ($type === 'decimal') {
-                    $randomValues[$placeholder] = round($min + mt_rand() / mt_getrandmax() * ($max - $min), 2);
+                    $randomValues[$placeholder] = round($min + (mt_rand() / mt_getrandmax()) * ($max - $min), 2);
+                    Log::info('Generated decimal value', [
+                        'placeholder' => $placeholder,
+                        'clean_placeholder' => $cleanPlaceholder,
+                        'min' => $min,
+                        'max' => $max,
+                        'value' => $randomValues[$placeholder],
+                        'type' => $type
+                    ]);
                 } else {
                     $randomValues[$placeholder] = rand((int)$min, (int)$max);
+                    Log::info('Generated integer value', [
+                        'placeholder' => $placeholder,
+                        'clean_placeholder' => $cleanPlaceholder,
+                        'min' => $min,
+                        'max' => $max,
+                        'value' => $randomValues[$placeholder],
+                        'type' => $type
+                    ]);
                 }
             } else {
                 $randomValues[$placeholder] = rand(1, 100);
+                Log::warning('No range defined for placeholder', [
+                    'placeholder' => $placeholder,
+                    'clean_placeholder' => $cleanPlaceholder,
+                    'value' => $randomValues[$placeholder]
+                ]);
             }
         }
         return $randomValues;
@@ -79,138 +117,175 @@ trait ProcessesQuestionData
         return $content;
     }
 
-    protected function processRumus($rumus, $randomValues, $precision = 3)
+    protected function processRumus($rumus, $randomValues, $question)
     {
         if (empty($rumus) || !is_array($rumus)) {
+            Log::warning('Rumus is empty or not an array', ['rumus' => $rumus]);
             return [];
         }
 
         $rumusValues = [];
+        $precision = $question->precision ?? 6; // Default presisi 6 digit
 
         foreach ($rumus as $index => $item) {
-            if (is_array($item) && isset($item['variabel_rumus'])) {
-                $expression = $item['variabel_rumus'];
+            if (is_array($item)) {
+                $key = array_key_first($item);
+                if ($key && isset($item[$key])) {
+                    $expression = $item[$key];
+                    Log::info('Processing rumus expression', [
+                        'original_expression' => $expression,
+                        'index' => $index
+                    ]);
 
-                foreach ($randomValues as $placeholder => $value) {
-                    $expression = str_replace($placeholder, (string)$value, $expression);
-                }
-
-                foreach ($rumusValues as $placeholder => $value) {
-                    $expression = str_replace($placeholder, (string)$value, $expression);
-                }
-
-                foreach ($this->constants as $constant => $value) {
-                    $expression = str_replace($constant, (string)$value, $expression);
-                }
-
-                $expression = str_replace(',', '.', $expression);
-
-                $expression = preg_replace('/\s+/', '', $expression);
-                $expression = preg_replace('/^\.([0-9]+)/', '0.$1', $expression);
-                $expression = preg_replace('/\(\.([0-9]+)/', '(0.$1', $expression);
-                $expression = preg_replace('/([+\-*\/])\.([0-9]+)/', '$10.$2', $expression);
-                $expression = preg_replace('/([0-9]+)\.([0-9]+)\.([0-9]+)/', '$1.$2$3', $expression);
-
-                while (preg_match('/(sin|cos|tan|sqrt)\(([0-9\.\*\/\+\-]+)\)/', $expression, $matches)) {
-                    $function = $matches[1];
-                    $arg = $matches[2];
-                    
-                    $argValue = eval('return ' . $arg . ';');
-                    
-                    if ($function !== 'sqrt' && strpos($arg, 'pi/180') !== false) {
-                        $argValue = $argValue * M_PI / 180;
+                    // Ganti placeholder dengan nilai acak
+                    foreach ($randomValues as $placeholder => $value) {
+                        $expression = str_replace($placeholder, (string)$value, $expression);
+                        Log::info('After replacing random value', [
+                            'placeholder' => $placeholder,
+                            'value' => $value,
+                            'expression' => $expression,
+                        ]);
                     }
-                    
-                    if ($function === 'sqrt') {
-                        $result = sqrt(abs($argValue));
-                    } else {
-                        $result = call_user_func($function, $argValue);
+
+                    // Ganti placeholder hasil rumus sebelumnya
+                    foreach ($rumusValues as $placeholder => $value) {
+                        $expression = str_replace($placeholder, (string)$value, $expression);
+                        Log::info('After replacing previous result', [
+                            'placeholder' => $placeholder,
+                            'value' => $value,
+                            'expression' => $expression,
+                        ]);
                     }
-                    $expression = str_replace($matches[0], $result, $expression);
-                }
 
-                while (preg_match('/([0-9\.]+)\*\*([0-9\.]+)/', $expression, $matches)) {
-                    $base = floatval($matches[1]);
-                    $exponent = floatval($matches[2]);
-                    $result = pow($base, $exponent);
-                    $expression = str_replace($matches[0], $result, $expression);
-                }
-                
-                $result = $this->evaluateExpression($expression);
+                    // Ganti konstanta
+                    foreach ($this->constants as $constant => $value) {
+                        $expression = str_replace($constant, (string)$value, $expression);
+                        Log::info('After replacing constant', [
+                            'constant' => $constant,
+                            'value' => $value,
+                            'expression' => $expression,
+                        ]);
+                    }
 
-                if ($result === 'Error') {
-                    return [];
-                }
+                    // Perbaikan format ekspresi
+                    $expression = $this->formatExpression($expression);
+                    Log::info('After formatting expression', ['expression' => $expression]);
 
-                if (abs($result) > 1000000 || (abs($result) > 0 && abs($result) < 0.000001)) {
-                    $result = sprintf('%.2e', $result);
-                } else {
-                    $result = round($result, $precision);
-                }
+                    // Evaluasi ekspresi
+                    $result = $this->evaluateExpression($expression);
+                    Log::info('After evaluating expression', [
+                        'expression' => $expression,
+                        'result' => $result
+                    ]);
 
-                $rumusValues['%variabelhasil' . ($index + 1) . '%'] = $result;
+                    if ($result === 'Error') {
+                        Log::error('Evaluation failed for expression', ['expression' => $expression]);
+                        return [];
+                    }
+
+                    // Format hasil dengan presisi yang sesuai
+                    if (is_numeric($result)) {
+                        // Jika hasil sangat kecil atau sangat besar, gunakan notasi ilmiah
+                        if (abs($result) > 1000000 || (abs($result) > 0 && abs($result) < 0.000001)) {
+                            $result = sprintf('%.6e', $result);
+                        } else {
+                            // Untuk nilai normal, gunakan presisi yang ditentukan
+                            $result = round($result, $precision);
+                        }
+                    }
+
+                    $rumusValues['%variabelhasil' . ($index + 1) . '%'] = $result;
+                    Log::info('Final result for rumus', [
+                        'index' => $index,
+                        'result' => $result,
+                        'precision' => $precision
+                    ]);
+                }
             }
         }
         return $rumusValues;
     }
 
+    protected function formatExpression($expression)
+    {
+        // Hapus spasi
+        $expression = preg_replace('/\s+/', '', $expression);
+        
+        // Perbaiki format angka desimal
+        $expression = str_replace(',', '.', $expression);
+        $expression = preg_replace('/^\.([0-9]+)/', '0.$1', $expression);
+        $expression = preg_replace('/\(\.([0-9]+)/', '(0.$1', $expression);
+        $expression = preg_replace('/([+\-*\/])\.([0-9]+)/', '$10.$2', $expression);
+        
+        // Perbaiki perkalian implisit (contoh: 2(3) menjadi 2*(3))
+        $expression = preg_replace('/([0-9\.]+)\(([0-9\.]+)\)/', '$1*($2)', $expression);
+        $expression = preg_replace('/([0-9\.]+)\(([^)]+)\)/', '$1*($2)', $expression);
+        
+        // Perbaiki tanda kurung yang berlebihan
+        $expression = preg_replace('/\(\(([^()]+)\)\)/', '($1)', $expression);
+        
+        // Tambahkan tanda kurung untuk memastikan urutan operasi yang benar
+        $expression = $this->addParenthesesForOrder($expression);
+        
+        Log::info('Formatted expression', [
+            'original' => $expression,
+            'formatted' => $expression
+        ]);
+        
+        return $expression;
+    }
+
+    protected function addParenthesesForOrder($expression)
+    {
+        // Tambahkan tanda kurung untuk operasi pangkat
+        $expression = preg_replace('/([0-9\.]+)\*\*([0-9\.]+)/', '($1)**($2)', $expression);
+        
+        // Tambahkan tanda kurung untuk operasi perkalian dan pembagian
+        $expression = preg_replace('/([0-9\.]+)\*([0-9\.]+)/', '($1)*($2)', $expression);
+        $expression = preg_replace('/([0-9\.]+)\/([0-9\.]+)/', '($1)/($2)', $expression);
+        
+        // Tambahkan tanda kurung untuk operasi penjumlahan dan pengurangan
+        $expression = preg_replace('/([0-9\.]+)\+([0-9\.]+)/', '($1)+($2)', $expression);
+        $expression = preg_replace('/([0-9\.]+)\-([0-9\.]+)/', '($1)-($2)', $expression);
+        
+        return $expression;
+    }
+
     protected function evaluateExpression($expression)
     {
         try {
-            $openParens = substr_count($expression, '(');
-            $closeParens = substr_count($expression, ')');
-            if ($openParens !== $closeParens) {
-                throw new \Exception('Unbalanced parentheses in expression: ' . $expression);
+            Log::info('Evaluating expression', ['expression' => $expression]);
+
+            // Validasi ekspresi - izinkan fungsi trigonometri dan fungsi matematika
+            if (!preg_match('/^[0-9\.\s+\-*\/()a-z]+$/', $expression)) {
+                throw new \Exception('Invalid expression format');
             }
 
-            if (!preg_match('/^[0-9\.\s+\-*\/()]+$/i', $expression)) {
-                preg_match_all('/[^0-9\.\s+\-*\/()]/i', $expression, $matches);
-                throw new \Exception('Invalid characters in expression: ' . implode(', ', $matches[0]));
-            }
+            // Konversi derajat ke radian untuk fungsi trigonometri
+            $expression = preg_replace_callback('/sin\(([^)]+)\)/', function($matches) {
+                return 'sin(deg2rad(' . $matches[1] . '))';
+            }, $expression);
+            
+            $expression = preg_replace_callback('/cos\(([^)]+)\)/', function($matches) {
+                return 'cos(deg2rad(' . $matches[1] . '))';
+            }, $expression);
+            
+            $expression = preg_replace_callback('/tan\(([^)]+)\)/', function($matches) {
+                return 'tan(deg2rad(' . $matches[1] . '))';
+            }, $expression);
 
-            $expression = preg_replace('/\s+/', '', $expression);
-            $expression = preg_replace('/^\.([0-9]+)/', '0.$1', $expression);
-            $expression = preg_replace('/\(\.([0-9]+)/', '(0.$1', $expression);
-            $expression = preg_replace('/([+\-*\/])\.([0-9]+)/', '$10.$2', $expression);
-            $expression = preg_replace('/([0-9]+)\.([0-9]+)\.([0-9]+)/', '$1.$2$3', $expression);
-
-            while (preg_match('/(sin|cos|tan|sqrt)\(([0-9\.\*\/\+\-]+)\)/', $expression, $matches)) {
-                $function = $matches[1];
-                $arg = $matches[2];
-                
-                $argValue = eval('return ' . $arg . ';');
-                
-                if ($function !== 'sqrt' && strpos($arg, 'pi/180') !== false) {
-                    $argValue = $argValue * M_PI / 180;
-                }
-                
-                if ($function === 'sqrt') {
-                    $result = sqrt(abs($argValue));
-                } else {
-                    $result = call_user_func($function, $argValue);
-                }
-                $expression = str_replace($matches[0], $result, $expression);
-            }
-
-            while (preg_match('/([0-9\.]+)\*\*([0-9\.]+)/', $expression, $matches)) {
-                $base = floatval($matches[1]);
-                $exponent = floatval($matches[2]);
-                $result = pow($base, $exponent);
-                $expression = str_replace($matches[0], $result, $expression);
-            }
-
+            // Evaluasi ekspresi
             $result = eval('return ' . $expression . ';');
 
             if (!is_numeric($result)) {
                 throw new \Exception('Expression did not evaluate to a number');
             }
 
-            return round($result, 6);
+            return $result;
         } catch (\Exception $e) {
             Log::error('Error evaluating expression', [
                 'expression' => $expression,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'error' => $e->getMessage()
             ]);
             return 'Error';
         }

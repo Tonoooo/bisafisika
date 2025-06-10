@@ -33,8 +33,7 @@ class EditQuestion extends EditRecord
             $data['random_ranges'] = implode(';', $ranges);
             Log::info('Random Ranges Before Save', ['random_ranges' => $data['random_ranges']]);
         } else {
-            $data['random_ranges'] = null;
-            Log::info('No Valid Random Variables Provided');
+            Log::warning('No Valid Random Variables Provided');
             throw new \Exception('Random variables are required.');
         }
 

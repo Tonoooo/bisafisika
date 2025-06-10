@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>BisaFisika - Kuasai Fisika dengan Mudah</title>
+    <title>BelajarFisika - Kuasai Fisika dengan Mudah</title>
     
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     
@@ -46,7 +46,7 @@
 
     <header class="py-6">
         <div class="container mx-auto px-6 lg:px-16 flex justify-between items-center">
-            <div class="text-3xl font-bold text-dark">BisaFisika</div>
+            <div class="text-3xl font-bold text-dark">BelajarFisika</div>
             <nav>
                 <a href="{{ url('/admin') }}" class="bg-brand-primary hover:bg-brand-primary-dark text-white font-bold py-2 px-6 rounded-full transition-all-smooth">
                     Masuk
@@ -72,13 +72,13 @@
 
             <div class="lg:w-1/2 flex justify-center lg:justify-end relative">
                 <div class="absolute w-4/5 h-4/5 bg-brand-secondary rounded-full -z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-60"></div>
-                <img src="{{ asset('images/einstein.png') }}" alt="Gambar einstein BisaFisika" class="w-4/5 max-w-sm lg:max-w-md h-auto drop-shadow-xl">
+                <img src="{{ asset('images/einstein.png') }}" alt="Gambar einstein BelajarFisika" class="w-4/5 max-w-sm lg:max-w-md h-auto drop-shadow-xl">
             </div>
         </section>
 
         <section class="py-20 lg:py-28">
             <div class="text-center mb-16">
-                <h2 class="text-3xl lg:text-4xl font-bold text-dark">Mengapa Belajar di BisaFisika?</h2>
+                <h2 class="text-3xl lg:text-4xl font-bold text-dark">Mengapa Belajar di BelajarFisika?</h2>
                 <p class="text-lg text-light mt-2">Tiga alasan utama untuk meningkatkan skormu bersama kami.</p>
             </div>
              
@@ -119,7 +119,7 @@
     </main>
 
     <footer class="mt-12 py-8 bg-brand-primary text-center">
-        <p class="text-white font-medium">&copy; {{ date('Y') }} BisaFisika by PolBan. Semua Hak Cipta Dilindungi.</p>
+        <p class="text-white font-medium">&copy; {{ date('Y') }} BelajarFisika by PolBan. Semua Hak Cipta Dilindungi.</p>
     </footer>
 
 </body>

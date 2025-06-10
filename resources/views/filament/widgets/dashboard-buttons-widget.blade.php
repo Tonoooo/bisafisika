@@ -18,7 +18,7 @@
                     {{-- [DIPERBAIKI] Posisi dan Ukuran Gambar Elang Disesuaikan --}}
                     {{-- Posisi diatur agar tidak keluar dari banner dan ukurannya lebih pas --}}
                     {{-- Transformasi menggunakan nilai negatif untuk menarik gambar ke dalam, bukan mendorong keluar --}}
-                    {{-- <img src="{{ asset('images/elang.png') }}" alt="Elang BisaFisika" 
+                    {{-- <img src="{{ asset('images/elang.png') }}" alt="Elang BelajarFisika" 
                          class="right-0 w-24 h-auto pointer-events-none " 
                          style="filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3)); width: 250px "> --}}
 

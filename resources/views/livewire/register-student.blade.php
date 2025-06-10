@@ -18,31 +18,34 @@
         </div>
         <div>
             <label for="school_id" class="block text-sm font-semibold text-gray-700 dark:text-gray-800 mb-1">Sekolah</label>
-            <select wire:model="school_id" id="school_id" class="block w-full border-gray-300 rounded-lg shadow-sm p-3 bg-white focus:border-primary-500 focus:ring-primary-500" required>
+            <select wire:model="school_id" id="school_id" class="block w-full border-gray-300 rounded-lg shadow-sm p-3 bg-white focus:border-primary-500 focus:ring-primary-500">
                 <option value="">Pilih Sekolah</option>
                 @foreach ($schools as $school)
                     <option value="{{ $school->id }}">{{ $school->name }}</option>
                 @endforeach
+                <option value="">Lainnya</option>
             </select>
             @error('school_id') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
         </div>
         <div>
             <label for="level" class="block text-sm font-semibold text-gray-700 dark:text-gray-800 mb-1">Tingkat</label>
-            <select wire:model="level" id="level" class="block w-full border-gray-300 rounded-lg shadow-sm p-3 bg-white focus:border-primary-500 focus:ring-primary-500" required>
+            <select wire:model="level" id="level" class="block w-full border-gray-300 rounded-lg shadow-sm p-3 bg-white focus:border-primary-500 focus:ring-primary-500">
                 <option value="">Pilih Tingkat</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
+                <option value="1">Kelas 1</option>
+                <option value="2">Kelas 2</option>
+                <option value="3">Kelas 3</option>
+                <option value="">Lainnya</option>
             </select>
             @error('level') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
         </div>
         <div>
             <label for="class" class="block text-sm font-semibold text-gray-700 dark:text-gray-800 mb-1">Kelas</label>
-            <select wire:model="class" id="class" class="block w-full border-gray-300 rounded-lg shadow-sm p-3 bg-white focus:border-primary-500 focus:ring-primary-500" required>
+            <select wire:model="class" id="class" class="block w-full border-gray-300 rounded-lg shadow-sm p-3 bg-white focus:border-primary-500 focus:ring-primary-500">
                 <option value="">Pilih Kelas</option>
                 @foreach (range('a', 'z') as $letter)
                     <option value="{{ $letter }}">{{ strtoupper($letter) }}</option>
                 @endforeach
+                    <option value="">Lainnya</option>
             </select>
             @error('class') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
         </div>

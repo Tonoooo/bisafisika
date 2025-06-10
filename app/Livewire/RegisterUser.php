@@ -22,9 +22,9 @@ class RegisterUser extends Component
         'name' => ['required', 'string', 'max:255'],
         'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
         'password' => ['required', 'confirmed', 'min:8'],
-        'school_id' => ['required', 'exists:schools,id'],
-        'level' => ['required_if:role,siswa', 'in:1,2,3'],
-        'class' => ['required_if:role,siswa', 'regex:/^[a-zA-Z]$/'],
+        'school_id' => ['exists:schools,id'],
+        'level' => ['in:1,2,3'],
+        'class' => ['regex:/^[a-zA-Z]$/'],
     ];
 
     public function register()

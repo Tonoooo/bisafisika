@@ -46,8 +46,7 @@ class CreateQuestion extends CreateRecord
             $data['random_ranges'] = implode(';', $ranges);
             Log::info('Random Ranges Before Save', ['random_ranges' => $data['random_ranges']]);
         } else {
-            $data['random_ranges'] = null;
-            Log::info('No Valid Random Variables Provided');
+            Log::warning('No Valid Random Variables Provided');
             throw new \Exception('Random variables are required.');
         }
 
@@ -68,6 +67,11 @@ class CreateQuestion extends CreateRecord
 
     protected function getHeaderActions(): array
     {
+        return [];
+    }
+
+    protected function getFormActions(): array
+    {
         return [
             Action::make('previewQuestion')
                 ->label('Preview Soal')
@@ -78,6 +82,7 @@ class CreateQuestion extends CreateRecord
                     Session::put('question_preview_data', $data);
                     return redirect()->route('questions.preview');
                 }),
+            $this->getCreateFormAction(),
         ];
     }
 }

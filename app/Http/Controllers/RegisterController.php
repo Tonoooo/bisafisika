@@ -37,7 +37,7 @@ class RegisterController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', 'min:8'],
             'school_id' => [
-                'required_unless:role,super_admin',
+                'required_if:role,siswa',
                 'exists:schools,id',
                 'nullable',
             ],

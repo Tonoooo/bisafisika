@@ -18,27 +18,41 @@ class RegisterStudent extends Component
     public $class;
     public $role = 'siswa';
 
-    protected $rules = [
-        'name' => 'required|min:3',
-        'email' => 'required|email|unique:users',
-        'password' => 'required|min:8',
-        'school_id' => 'required|exists:schools,id',
-        'level' => 'required|in:1,2,3',
-        'class' => 'required|regex:/^[a-zA-Z]$/',
-    ];
+    protected function rules()
+    {
+        return [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8',
+            'school_id' => 'nullable',
+            'level' => 'nullable',
+            'class' => 'nullable',
+        ];
+    }
 
     public function register()
     {
-        $this->validate();
+        $validatedData = $this->validate();
+
+        // Konversi string kosong menjadi null untuk semua field yang bisa null
+        if ($validatedData['school_id'] === '') {
+            $validatedData['school_id'] = null;
+        }
+        if ($validatedData['level'] === '') {
+            $validatedData['level'] = null;
+        }
+        if ($validatedData['class'] === '') {
+            $validatedData['class'] = null;
+        }
 
         $user = User::create([
-            'name' => $this->name,
-            'email' => $this->email,
-            'password' => Hash::make($this->password),
-            'school_id' => $this->school_id,
-            'level' => $this->level,
-            'class' => $this->class,
-            'status' => 'verified',
+            'name' => $validatedData['name'],
+            'email' => $validatedData['email'],
+            'password' => Hash::make($validatedData['password']),
+            'school_id' => $validatedData['school_id'],
+            'level' => $validatedData['level'],
+            'class' => $validatedData['class'],
+            'status' => 'active',
         ]);
 
         $user->assignRole('siswa');

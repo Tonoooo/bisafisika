@@ -18,11 +18,12 @@
         </div>
         <div>
             <label for="school_id" class="block text-sm font-semibold text-gray-700 dark:text-gray-800 mb-1">Sekolah</label>
-            <select wire:model="school_id" id="school_id" class="block w-full border-gray-300 rounded-lg shadow-sm p-3 bg-white focus:border-primary-500 focus:ring-primary-500" required>
+            <select wire:model="school_id" id="school_id" class="block w-full border-gray-300 rounded-lg shadow-sm p-3 bg-white focus:border-primary-500 focus:ring-primary-500">
                 <option value="">Pilih Sekolah</option>
                 @foreach ($schools as $school)
                     <option value="{{ $school->id }}">{{ $school->name }}</option>
                 @endforeach
+                    <option value="">Lainnya</option>
             </select>
             @error('school_id') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
         </div>
