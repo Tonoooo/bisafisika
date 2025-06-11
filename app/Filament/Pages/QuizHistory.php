@@ -19,7 +19,7 @@ class QuizHistory extends Page
     {
         return [
             'userQuizzes' => UserQuiz::where('user_id', Auth::id())
-                ->with('quiz')
+                ->with(['quiz.bab'])
                 ->latest()
                 ->get(),
         ];
