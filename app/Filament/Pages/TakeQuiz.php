@@ -26,7 +26,10 @@ class TakeQuiz extends Page
     public function selectBab($babId)
     {
         $this->selectedBab = Bab::find($babId);
-        $this->quizzes = $this->selectedBab->quizzes;
+        $this->quizzes = $this->selectedBab->quizzes()
+            ->whereHas('questions')
+            ->orderBy('title')
+            ->get();
     }
 
     public function backToBabs()
@@ -37,6 +40,19 @@ class TakeQuiz extends Page
 
     public function startQuiz($quizId)
     {
+        $quiz = \App\Models\Quiz::find($quizId);
+        $user = auth()->user();
+        
+        // Hitung berapa kali user sudah mengerjakan quiz ini
+        $attemptCount = \App\Models\UserQuiz::where('user_id', $user->id)
+            ->where('quiz_id', $quizId)
+            ->count();
+            
+        if ($attemptCount >= $quiz->attempt_limit) {
+            $this->js("alert('Anda telah mencapai batas maksimal pengerjaan quiz ini ({$quiz->attempt_limit} kali).')");
+            return;
+        }
+        
         return redirect()->route('quiz.start', $quizId);
     }
 

@@ -119,7 +119,7 @@
     </main>
 
     <footer class="mt-12 py-8 bg-brand-primary text-center">
-        <p class="text-white font-medium">&copy; {{ date('Y') }} BelajarFisika by PolBan. Semua Hak Cipta Dilindungi.</p>
+        <p class="text-white font-medium">&copy; {{ date('Y') }} Politeknik Negeri Bandung. All rights reserved.</p>
     </footer>
 
 </body>
