@@ -52,7 +52,7 @@ class RegisterStudent extends Component
             'school_id' => $validatedData['school_id'],
             'level' => $validatedData['level'],
             'class' => $validatedData['class'],
-            'status' => 'active',
+            'status' => 'verified',
         ]);
 
         $user->assignRole('siswa');

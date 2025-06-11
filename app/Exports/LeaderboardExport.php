@@ -41,9 +41,9 @@ class LeaderboardExport implements FromCollection, WithHeadings, WithMapping, Sh
     {
         return [
             $row->user->name,
-            $row->user->school->name,
-            $row->user->level,
-            $row->user->class,
+            $row->user->school?->name ?? '-',
+            $row->user->level ?? '-',
+            $row->user->class ?? '-',
             number_format($row->total_score, 2),
             $row->total_quizzes,
             number_format($row->average_score, 2)

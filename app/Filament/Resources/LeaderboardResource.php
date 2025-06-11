@@ -90,13 +90,16 @@ class LeaderboardResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user.school.name')
                     ->label('Sekolah')
+                    ->formatStateUsing(fn ($state) => $state ?? 'Lainnya')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user.level')
                     ->label('Tingkat')
+                    ->formatStateUsing(fn ($state) => $state ?? 'Lainnya')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user.class')
                     ->label('Kelas')
+                    ->formatStateUsing(fn ($state) => $state ?? 'Lainnya')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('total_score')
                     ->label('Total Nilai')
