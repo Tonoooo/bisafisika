@@ -20,7 +20,6 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
-// Impor widget kustom yang baru dibuat
 use App\Filament\Widgets\DashboardButtonsWidget;
 use App\Filament\Pages\QuizHistory;
 
@@ -36,9 +35,10 @@ class AdminPanelProvider extends PanelProvider
             //->registration()
             ->passwordReset()
             ->profile()
-            ->brandName('BelajarFisika')
             ->brandLogo(asset('images/banner_logo.png'))
-            ->brandLogoHeight('280px')
+            ->brandLogoHeight('60px')
+            ->brandName('BelajarFisika')
+            ->favicon(asset('images/favicon_io/favicon.ico'))
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -80,7 +80,6 @@ class AdminPanelProvider extends PanelProvider
                     return $builder->items([]);
                 }
 
-                // Menu dasar untuk semua role
                 $items = [
                     NavigationItem::make('Dashboard')
                         ->icon('heroicon-o-home')
@@ -90,21 +89,23 @@ class AdminPanelProvider extends PanelProvider
                                          $user->roles->contains('name', 'siswa')),
                 ];
 
-                // Menu tambahan berdasarkan role
                 if ($user->roles->contains('name', 'super_admin')) {
                     $items = array_merge($items, [
+                        NavigationItem::make('Questions')
+                            ->icon('heroicon-o-question-mark-circle')
+                            ->url(fn (): string => \App\Filament\Resources\QuestionResource::getUrl()),
                         NavigationItem::make('Quiz')
                             ->icon('heroicon-o-academic-cap')
                             ->url(fn (): string => \App\Filament\Resources\QuizResource::getUrl()),
                         NavigationItem::make('Bab')
                             ->icon('heroicon-o-book-open')
                             ->url(fn (): string => \App\Filament\Resources\BabResource::getUrl()),
-                        NavigationItem::make('Questions')
-                            ->icon('heroicon-o-question-mark-circle')
-                            ->url(fn (): string => \App\Filament\Resources\QuestionResource::getUrl()),
                         NavigationItem::make('Take Quiz')
                             ->icon('heroicon-o-academic-cap')
                             ->url(fn (): string => \App\Filament\Pages\TakeQuiz::getUrl()),
+                        NavigationItem::make('Leaderboard')
+                            ->icon('heroicon-o-trophy')
+                            ->url(fn (): string => \App\Filament\Resources\LeaderboardResource::getUrl()),
                         NavigationItem::make('Pengguna')
                             ->icon('heroicon-o-users')
                             ->url(fn (): string => \App\Filament\Resources\UserResource::getUrl()),
@@ -114,9 +115,6 @@ class AdminPanelProvider extends PanelProvider
                         NavigationItem::make('Riwayat Quiz')
                             ->icon('heroicon-o-clock')
                             ->url(fn (): string => \App\Filament\Pages\QuizHistory::getUrl()),
-                        NavigationItem::make('Leaderboard')
-                            ->icon('heroicon-o-trophy')
-                            ->url(fn (): string => \App\Filament\Resources\LeaderboardResource::getUrl()),
                         NavigationItem::make('Roles & Permissions')
                             ->icon('heroicon-o-shield-check')
                             ->url('/admin/shield/roles'),

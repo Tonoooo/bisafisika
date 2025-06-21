@@ -7,8 +7,8 @@
                 Cancel
             </button>
             <div class="flex items-center">
-                <img src="{{ asset('images/einstein.png') }}" alt="Logo" class="w-12 h-12">
-                <h1 class=" font-bold sm:text-xl md:text-2xl">BelajarFisika</h1>
+                <img src="{{ asset('images/banner_logo.png') }}" alt="Logo" class="h-12">
+                {{-- <h1 class=" font-bold sm:text-xl md:text-2xl">BelajarFisika</h1> --}}
             </div>
             <div class="flex items-center text-red-600 font-medium">
                 <x-heroicon-o-clock class="w-5 h-5 mr-1.5" />

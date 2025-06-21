@@ -1,3 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Favicon styles */
+link[rel="icon"] {
+    display: block;
+}
+
+/* Ensure favicon is visible in all browsers */
+.favicon {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background-image: url('/images/favicon_io/favicon-16x16.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+}
