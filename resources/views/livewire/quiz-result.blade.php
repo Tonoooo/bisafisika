@@ -4,7 +4,11 @@
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
     <div class="p-6 bg-white rounded-lg shadow-lg">
-        <h1 class="mb-6 text-2xl font-bold text-gray-900">Quiz Result</h1>
+        <div class="flex items-center justify-center mb-6">
+            <img src="{{ asset('images/einstein.png') }}" alt="Logo" class="w-12 h-12">
+            <h1 class="text-2xl font-bold text-gray-900">Quiz Result</h1>
+        </div>
+        
         <p class="mb-2 text-lg text-gray-700"><strong>Quiz:</strong> {{ $userQuiz->quiz->title }}</p>
         <p class="mb-2 text-lg text-gray-700"><strong>Tanggal:</strong> {{ $userQuiz->created_at->format('d M Y H:i') }} WIB</p>
         <p class="mb-4 text-lg text-gray-700"><strong>Score:</strong> {{ $score }}</p>

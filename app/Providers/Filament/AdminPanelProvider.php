@@ -36,13 +36,15 @@ class AdminPanelProvider extends PanelProvider
             //->registration()
             ->passwordReset()
             ->profile()
+            ->brandName('BelajarFisika')
+            ->brandLogo(asset('images/banner_logo.png'))
+            ->brandLogoHeight('280px')
             ->colors([
                 'primary' => Color::Amber,
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
-                // Menggunakan halaman dashboard default Filament
                 Pages\Dashboard::class,
                 QuizHistory::class,
             ])
@@ -51,7 +53,6 @@ class AdminPanelProvider extends PanelProvider
             ])
             //->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                // Hanya daftarkan DashboardButtonsWidget
                 DashboardButtonsWidget::class,
             ])
             

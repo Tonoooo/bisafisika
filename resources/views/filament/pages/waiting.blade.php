@@ -3,10 +3,7 @@
         <h2 class="text-2xl font-bold mb-4 text-center">Tunggu Verifikasi</h2>
         <p class="text-center mb-4">Akun Anda sedang menunggu verifikasi oleh super admin.</p>
          @php
-            // Buat pesan dasar
             $message = "Kepada Yth. Saya bermaksud untuk meminta verifikasi atas nama " . urlencode(auth()->user()->name);
-
-            // Tambahkan informasi sekolah jika user punya data sekolah
             if (auth()->user()->school) {
                 $message .= " dari " . urlencode(auth()->user()->school->name);
             }
@@ -21,9 +18,9 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.verified) {
-                        window.location.href = '/dashboard'; // Atau kemana user harus diarahkan setelah diverifikasi
+                        window.location.href = '/dashboard';
                     }
                 });
-        }, 5000); // Cek setiap 5 detik
+        }, 5000);
     </script>
 </x-filament::page>

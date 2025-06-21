@@ -19,7 +19,6 @@
 
 @push('scripts')
     <script>
-        // Override the register link
         document.addEventListener('DOMContentLoaded', function() {
             const registerLink = document.querySelector('a[href*="register"]');
             if (registerLink) {

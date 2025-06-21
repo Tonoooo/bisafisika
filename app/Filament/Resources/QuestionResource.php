@@ -147,15 +147,14 @@ class QuestionResource extends Resource
                                         $index = array_search($uuid, $keys) !== false ? array_search($uuid, $keys) + 1 : 1;
                                         return "variabelhasil" . $index;
                                     })
-                                    ->helperText('Gunakan operator: +, -, *, /. Fungsi: cos(), sin(), tan() (dalam derajat), sqrt(). Pangkat: a**b (contoh: 2**3). Contoh: 2 * %tegangan% * cos(30) + sqrt(16)'),
+                                    ->helperText('Gunakan operator: +, -, *, /. Fungsi: cos(), sin(), tan() (dalam derajat), sqrt(). Pangkat: a**b (contoh: 2**3). Desimal gunakan titik(.). Contoh: 2 * %tegangan% * cos(30) + sqrt(16)'),
 
                                 Forms\Components\Textarea::make('variabel_rumus')
                                     ->label('Rumus')
                                     ->rows(4)
                                     ->columnSpan(2)
                                     ->required()
-                                    ->helperText('Gunakan %randomnumberX% untuk variabel acak, dan %variabelhasilX% untuk hasil rumus sebelumnya. desimal gunakan titik(.)'),
-                            ]),
+                                ]),
                     ])
                     ->label('Variabel Rumus')
                     ->addActionLabel('Tambah Rumus')

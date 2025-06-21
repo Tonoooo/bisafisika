@@ -241,11 +241,11 @@ class QuizController extends Controller
                     // Format hasil dengan presisi yang sesuai
                     if (is_numeric($result)) {
                         // Jika hasil sangat kecil atau sangat besar, gunakan notasi ilmiah
-                        if (abs($result) > 1000000 || (abs($result) > 0 && abs($result) < 0.000001)) {
+                    if (abs($result) > 1000000 || (abs($result) > 0 && abs($result) < 0.000001)) {
                             $result = sprintf('%.6e', $result);
-                        } else {
+                    } else {
                             // Untuk nilai normal, gunakan presisi yang ditentukan
-                            $result = round($result, $precision);
+                        $result = round($result, $precision);
                         }
                     }
 
@@ -264,14 +264,14 @@ class QuizController extends Controller
     private function formatExpression($expression)
     {
         // Hapus spasi
-        $expression = preg_replace('/\s+/', '', $expression);
-        
+            $expression = preg_replace('/\s+/', '', $expression);
+            
         // Perbaiki format angka desimal
         $expression = str_replace(',', '.', $expression);
-        $expression = preg_replace('/^\.([0-9]+)/', '0.$1', $expression);
-        $expression = preg_replace('/\(\.([0-9]+)/', '(0.$1', $expression);
-        $expression = preg_replace('/([+\-*\/])\.([0-9]+)/', '$10.$2', $expression);
-        
+            $expression = preg_replace('/^\.([0-9]+)/', '0.$1', $expression);
+            $expression = preg_replace('/\(\.([0-9]+)/', '(0.$1', $expression);
+            $expression = preg_replace('/([+\-*\/])\.([0-9]+)/', '$10.$2', $expression);
+            
         // Perbaiki perkalian implisit (contoh: 2(3) menjadi 2*(3))
         $expression = preg_replace('/([0-9\.]+)\(([0-9\.]+)\)/', '$1*($2)', $expression);
         $expression = preg_replace('/([0-9\.]+)\(([^)]+)\)/', '$1*($2)', $expression);
@@ -363,7 +363,6 @@ class QuizController extends Controller
         foreach ($answers as &$answer) {
             $content = $answer['content'];
 
-            // Ganti %randomnumberX% atau variabel acak lainnya
             foreach ($randomValues as $placeholder => $value) {
                 $content = str_replace($placeholder, (string)$value, $content);
             }
