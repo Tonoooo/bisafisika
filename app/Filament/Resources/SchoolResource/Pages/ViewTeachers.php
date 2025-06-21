@@ -13,13 +13,13 @@ use App\Models\School;
 use Illuminate\Database\Eloquent\Builder;
 use Closure;
 
-class ViewStudents extends Page implements HasTable
+class ViewTeachers extends Page implements HasTable
 {
     use InteractsWithTable;
 
     protected static string $resource = SchoolResource::class;
 
-    protected static string $view = 'filament.resources.school-resource.pages.view-students';
+    protected static string $view = 'filament.resources.school-resource.pages.view-teachers';
 
     public $record;
 
@@ -29,7 +29,7 @@ class ViewStudents extends Page implements HasTable
         if (!$school) {
             abort(404, 'Sekolah tidak ditemukan');
         }
-        return "Daftar Siswa - {$school->name}";
+        return "Daftar Guru - {$school->name}";
     }
 
     protected function getTableQuery(): ?Builder
@@ -43,7 +43,7 @@ class ViewStudents extends Page implements HasTable
         return User::query()
             ->where('school_id', $school->id)
             ->whereHas('roles', function ($query) {
-                $query->where('name', 'siswa');
+                $query->where('name', 'guru');
             });
     }
 
@@ -60,29 +60,22 @@ class ViewStudents extends Page implements HasTable
                 User::query()
                     ->where('school_id', $school->id)
                     ->whereHas('roles', function ($query) {
-                        $query->where('name', 'siswa');
+                        $query->where('name', 'guru');
                     })
             )
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Nama Siswa')
+                    ->label('Nama Guru')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->label('Email')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('level')
-                    ->label('Tingkat')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('class')
-                    ->label('Kelas')
-                    ->sortable(),
-                // Tables\Columns\TextColumn::make('status')
-                //     ->label('Status')
-                //     ->badge()
-                //     ->color(fn (string $state): string => match ($state) {
-                //         'verified' => 'success',
-                //         'pending' => 'warning',
-                //     }),
+                // Tables\Columns\TextColumn::make('level')
+                //     ->label('Tingkat')
+                //     ->sortable(),
+                // Tables\Columns\TextColumn::make('class')
+                //     ->label('Kelas')
+                //     ->sortable(),
             ])
             ->filters([
                 //
@@ -116,4 +109,4 @@ class ViewStudents extends Page implements HasTable
     {
         return false; 
     }
-}
+} 

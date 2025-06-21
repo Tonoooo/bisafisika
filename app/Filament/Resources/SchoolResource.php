@@ -71,6 +71,10 @@ class SchoolResource extends Resource
                     ->label('Lihat Siswa')
                     ->icon('heroicon-o-users')
                     ->url(fn (School $record): string => route('filament.admin.resources.schools.students', ['record' => $record])),
+                Tables\Actions\Action::make('viewTeachers')
+                    ->label('Lihat Guru')
+                    ->icon('heroicon-o-user-group')
+                    ->url(fn (School $record): string => route('filament.admin.resources.schools.teachers', ['record' => $record])),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -95,6 +99,7 @@ class SchoolResource extends Resource
             'create' => Pages\CreateSchool::route('/create'),
             'edit' => Pages\EditSchool::route('/{record}/edit'),
             'students' => Pages\ViewStudents::route('/{record}/students'),
+            'teachers' => Pages\ViewTeachers::route('/{record}/teachers'),
         ];
     }
 }
