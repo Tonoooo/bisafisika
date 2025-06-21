@@ -28,7 +28,7 @@
             @error('school_id') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
         </div>
         <div class="pt-4">
-            <button type="submit" class="w-full p-3 rounded-md text-white font-semibold hover:opacity-90 transition shadow-md" style="background-color: #d5c7a3;">
+            <button type="submit" class="w-full p-3 rounded-md text-white font-semibold hover:opacity-90 transition shadow-md" style="background-color: #ccad5e;">
                 Daftar
             </button>
         </div>

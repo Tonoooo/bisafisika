@@ -76,13 +76,13 @@ class ViewStudents extends Page implements HasTable
                 Tables\Columns\TextColumn::make('class')
                     ->label('Kelas')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('status')
-                    ->label('Status')
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'verified' => 'success',
-                        'pending' => 'warning',
-                    }),
+                // Tables\Columns\TextColumn::make('status')
+                //     ->label('Status')
+                //     ->badge()
+                //     ->color(fn (string $state): string => match ($state) {
+                //         'verified' => 'success',
+                //         'pending' => 'warning',
+                //     }),
             ])
             ->filters([
                 //
