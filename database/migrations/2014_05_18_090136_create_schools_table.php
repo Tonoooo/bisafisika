@@ -18,16 +18,16 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::table('users', function (Blueprint $table) {
-            $table->foreignId('school_id')->nullable()->constrained()->nullOnDelete();
-            $table->enum('level', ['1', '2', '3'])->nullable();
-            $table->string('class')->nullable();
-            $table->enum('status', ['pending', 'verified'])->default('verified');
-        });
+        // Schema::table('users', function (Blueprint $table) {
+        //     $table->foreignId('school_id')->nullable()->constrained()->nullOnDelete();
+        //     $table->enum('level', ['1', '2', '3'])->nullable();
+        //     $table->string('class')->nullable();
+        //     $table->enum('status', ['pending', 'verified'])->default('verified');
+        // });
 
-        Schema::table('leaderboards', function (Blueprint $table) {
-            $table->integer('total_score')->default(0);
-        });
+        // Schema::table('leaderboards', function (Blueprint $table) {
+        //     $table->integer('total_score')->default(0);
+        // });
     }
 
     /**

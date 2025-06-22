@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('score');
             $table->timestamps();
             // total_score
-            $table->integer('total_score');
+            $table->integer('total_score')->default(0);
         });
 
     }

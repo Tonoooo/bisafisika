@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('quiz_id')->constrained()->onDelete('cascade');
             $table->dateTime('started_at')->nullable();
             $table->boolean('is_completed')->default(false); // to check if the quiz is completed
+            $table->decimal('score', 5, 2)->default(0);
             $table->timestamps();
         });
 
