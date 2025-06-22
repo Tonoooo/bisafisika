@@ -72,13 +72,13 @@
         }
         
         @php
-            $message = "Kepada Yth. Saya bermaksud untuk meminta verifikasi atas nama " . urlencode(auth()->user()->name);
+            $message = "Kepada Admin. Saya bermaksud untuk meminta verifikasi atas nama " . urlencode(auth()->user()->name);
 
             if (auth()->user()->school) {
                 $message .= " dari " . urlencode(auth()->user()->school->name);
             }
 
-            $whatsappLink = "https://wa.me/6281356704272?text=" . $message;
+            $whatsappLink = "https://wa.me/6285221867597?text=" . $message;
         @endphp
 
         .whatsapp-button {
@@ -125,12 +125,12 @@
         </div>
         
         <h2>Tunggu Verifikasi</h2>
-        <p>Akun Anda sedang dalam proses peninjauan. Silakan hubungi dosen untuk mempercepat proses verifikasi.</p>
+        <p>Akun Anda sedang dalam proses peninjauan. Silakan hubungi Admin untuk mempercepat proses verifikasi.</p>
         
         <a href="{{ $whatsappLink }}" class="whatsapp-button" target="_blank">
             <!-- Pastikan path ke gambar ini benar -->
             <img src="{{ asset('images/wa_icon.png') }}" alt="WhatsApp Icon">
-            Hubungi Dosen via WhatsApp
+            Hubungi Admin via WhatsApp
         </a>
     </div>
 
