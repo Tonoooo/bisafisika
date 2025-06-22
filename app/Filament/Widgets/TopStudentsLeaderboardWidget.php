@@ -9,20 +9,14 @@ use App\Models\User;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
-use Filament\Tables\Columns\Layout\View; // Import View
+use Filament\Tables\Columns\Layout\View;
 
 class TopStudentsLeaderboardWidget extends BaseWidget
 {
-    // Heading tidak lagi diperlukan di sini karena kita menaruhnya di file Blade
     protected static ?string $heading = 'Papan Peringkat Teratas';
 
-    // Kita akan atur column span di halaman Dashboard, bukan di sini
     protected int | string | array $columnSpan = 'full';
 
-    // Widget ini tidak lagi membutuhkan view kustom karena kita memisahkannya.
-    // Jika kode di atas Anda simpan di file view widget ini, biarkan baris ini.
-    // Jika Anda membuat widget baru, Anda bisa hapus baris ini.
-    // protected static string $view = 'filament.widgets.top-students-leaderboard-widget';
 
 
     protected function getTableQuery(): Builder
@@ -42,12 +36,10 @@ class TopStudentsLeaderboardWidget extends BaseWidget
     protected function getTableColumns(): array
     {
         return [
-            // Kolom Peringkat Baru: Menampilkan nomor urut sebagai peringkat
             TextColumn::make('rank')
                 ->label('Peringkat')
                 ->getStateUsing(static function (\stdClass $rowLoop): string {
                     $rank = $rowLoop->iteration;
-                    // Menambahkan ikon untuk top 3
                     return match ($rank) {
                         1 => '🥇 ' . $rank,
                         2 => '🥈 ' . $rank,
@@ -67,14 +59,14 @@ class TopStudentsLeaderboardWidget extends BaseWidget
             TextColumn::make('total_score')
                 ->label('Total Skor')
                 ->sortable()
-                ->badge() // Mengubah tampilan menjadi lencana
-                ->color('warning') // Memberi warna pada lencana
+                ->badge()
+                ->color('warning') 
                 ->alignCenter(),
         ];
     }
     
     protected function isTablePaginationEnabled(): bool
     {
-        return false; // Mematikan paginasi karena kita hanya menampilkan top 5
+        return false; 
     }
 }

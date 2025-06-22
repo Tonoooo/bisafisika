@@ -5,11 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menunggu Verifikasi</title>
     <style>
-        /* CSS untuk memperindah halaman */
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
         body {
-            background-color: #ffedcc; /* Warna latar belakang yang lembut */
+            background-color: #ffedcc;
             font-family: 'Poppins', sans-serif;
             display: flex;
             justify-content: center;
@@ -24,17 +23,17 @@
             margin: 20px;
             padding: 40px;
             background-color: #ffffff;
-            border-radius: 16px; /* Sudut lebih bulat */
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); /* Bayangan lebih halus */
+            border-radius: 16px; 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); 
             text-align: center;
-            border-top: 5px solid #ffac40; /* Aksen warna WhatsApp */
+            border-top: 5px solid #ffac40;
         }
 
         .icon-container {
             margin: 0 auto 20px auto;
             width: 80px;
             height: 80px;
-            background-color: #ffb95e; /* Hijau muda */
+            background-color: #ffb95e; 
             border-radius: 50%;
             display: flex;
             justify-content: center;
@@ -44,11 +43,11 @@
         .icon-container svg {
             width: 40px;
             height: 40px;
-            stroke: #994a00; /* Warna ikon jam */
-            animation: spin 2s linear infinite; /* Animasi berputar */
+            stroke: #994a00; 
+            animation: spin 2s linear infinite; 
         }
 
-        /* Animasi untuk ikon jam */
+        
         @keyframes spin {
             from {
                 transform: rotate(0deg);
@@ -62,21 +61,19 @@
             font-size: 28px;
             font-weight: 700;
             margin-bottom: 12px;
-            color: #2c3e50; /* Warna judul lebih gelap */
+            color: #2c3e50; 
         }
 
         .verification-container p {
             font-size: 16px;
-            color: #7f8c8d; /* Warna teks deskripsi lebih lembut */
+            color: #7f8c8d; 
             line-height: 1.6;
             margin-bottom: 30px;
         }
         
         @php
-            // Buat pesan dasar
             $message = "Kepada Yth. Saya bermaksud untuk meminta verifikasi atas nama " . urlencode(auth()->user()->name);
 
-            // Tambahkan informasi sekolah jika user punya data sekolah 
             if (auth()->user()->school) {
                 $message .= " dari " . urlencode(auth()->user()->school->name);
             }
@@ -85,11 +82,11 @@
         @endphp
 
         .whatsapp-button {
-            display: inline-flex; /* Agar ikon dan teks bisa sejajar */
+            display: inline-flex;
             align-items: center;
             justify-content: center;
             padding: 14px 20px;
-            background-color: #25D366; /* Warna hijau WhatsApp */
+            background-color: #25D366; 
             color: #ffffff;
             text-decoration: none;
             font-weight: 600;
@@ -103,12 +100,12 @@
         .whatsapp-button img {
             width: 24px;
             height: 24px;
-            margin-right: 12px; /* Jarak antara ikon dan teks */
+            margin-right: 12px; 
         }
 
         .whatsapp-button:hover {
-            background-color: #1EBE57; /* Warna hijau lebih gelap saat di-hover */
-            transform: translateY(-3px); /* Efek sedikit terangkat */
+            background-color: #1EBE57;
+            transform: translateY(-3px);
             box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
         }
 

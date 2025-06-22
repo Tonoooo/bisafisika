@@ -18,8 +18,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
-// Impor Model
-use Illuminate\Database\Eloquent\Model; // Import class Model
+use Illuminate\Database\Eloquent\Model;
 
 
 class LeaderboardResource extends Resource
@@ -42,19 +41,16 @@ class LeaderboardResource extends Resource
         return false;
     }
 
-     // Ubah tipe hint parameter $record di sini
      public static function canEdit(Model $record): bool
     {
-        return false; // Tidak mengizinkan edit entri Leaderboard
+        return false; 
     }
 
-    // Ubah tipe hint parameter $record di sini
     public static function canDelete(Model $record): bool
     {
-        return false; // Tidak mengizinkan hapus entri Leaderboard
+        return false; 
     }
 
-    // Anda mungkin juga perlu mengubah ini jika diaktifkan dan error serupa muncul
     // public static function canForceDelete(Model $record): bool
     // {
     //     return false;
@@ -165,7 +161,6 @@ class LeaderboardResource extends Resource
         $query = parent::getEloquentQuery();
         $user = auth()->user();
 
-        // Filter hanya user dengan role siswa
         $query->whereHas('user', function ($query) {
             $query->whereHas('roles', function ($query) {
                 $query->where('name', 'siswa');

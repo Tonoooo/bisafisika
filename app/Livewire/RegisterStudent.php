@@ -34,7 +34,6 @@ class RegisterStudent extends Component
     {
         $validatedData = $this->validate();
 
-        // Konversi string kosong menjadi null untuk semua field yang bisa null
         if ($validatedData['school_id'] === '') {
             $validatedData['school_id'] = null;
         }

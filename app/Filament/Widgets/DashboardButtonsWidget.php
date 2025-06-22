@@ -9,19 +9,14 @@ use App\Models\User;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Support\Facades\DB;
 
-// Widget gabungan yang akan menampilkan gambar, tombol, dan tabel
 class DashboardButtonsWidget extends BaseWidget
 {
-    //Opsional: Tambahkan heading untuk widget secara keseluruhan
     protected static ?string $heading = '';
 
-    // Tentukan view Blade kustom untuk widget ini
     protected static string $view = 'filament.widgets.dashboard-buttons-widget';
 
-    // Atur lebar kolom widget menjadi satu baris penuh
     protected int | string | array $columnSpan = 'full';
 
-    // Metode untuk mendefinisikan tabel leaderboard
     public function table(Table $table): Table
     {
         return $table

@@ -42,9 +42,6 @@
                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline">
                 </div>
 
-                 {{-- School ID diperlukan di controller, Anda mungkin ingin menambahkannya di form --}}
-                 {{-- Atau menentukannya otomatis jika logikanya memungkinkan --}}
-                 {{-- Contoh sederhana: dropdown pilih sekolah --}}
                  {{-- <div class="mb-4">
                      <label for="school_id" class="block text-gray-700 text-sm font-bold mb-2">Sekolah:</label>
                      <select id="school_id" name="school_id" required

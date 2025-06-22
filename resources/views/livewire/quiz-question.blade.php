@@ -98,12 +98,10 @@
         </div>
     </div>
     <style>
-        /* Sembunyikan tombol Home pada navigasi mobile di halaman kuis */
         #mobile-menu a[href="/admin"] {
             display: none !important;
         }
         
-        /* Aturan sebelumnya yang tidak digunakan lagi */
         /*
         .filament-sidebar-item[href="/"] {
             display: none !important;

@@ -26,36 +26,21 @@ class StudentScore extends Model
     public static function updateScore($userId)
     {
         try {
-            // Hitung total quiz yang sudah dikerjakan
             $totalQuizzes = UserQuiz::where('user_id', $userId)
                 ->where('is_completed', true)
                 ->count();
 
-            // Ambil semua score untuk logging
             $scores = UserQuiz::where('user_id', $userId)
                 ->where('is_completed', true)
                 ->select('quiz_id', 'score', 'created_at')
                 ->get();
 
-            // Log semua score yang ada
-            Log::info('Scores for user ' . $userId, [
-                'scores' => $scores->toArray()
-            ]);
 
-            // Hitung total score dari semua quiz yang diselesaikan
             $totalScore = $scores->sum('score');
 
-            // Log hasil perhitungan
-            Log::info('Score calculation for user ' . $userId, [
-                'total_quizzes' => $totalQuizzes,
-                'total_score' => $totalScore,
-                'scores_sum' => $scores->sum('score')
-            ]);
 
-            // Hitung rata-rata score
             $averageScore = $totalQuizzes > 0 ? $totalScore / $totalQuizzes : 0;
 
-            // Update atau buat record baru
             $studentScore = self::updateOrCreate(
                 ['user_id' => $userId],
                 [
@@ -67,10 +52,7 @@ class StudentScore extends Model
 
             return $studentScore;
         } catch (\Exception $e) {
-            Log::error('Error updating StudentScore', [
-                'user_id' => $userId,
-                'error' => $e->getMessage()
-            ]);
+            
             throw $e;
         }
     }

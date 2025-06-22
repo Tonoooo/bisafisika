@@ -50,7 +50,6 @@ class Quiz extends Component
             $totalScore = 0;
             $totalQuestions = count($this->questions);
             
-            // Get UserQuiz data
             $userQuiz = UserQuiz::findOrFail($this->userQuizId);
             
             foreach ($this->answers as $userQuestionId => $answerContent) {
@@ -69,10 +68,8 @@ class Quiz extends Component
                 }
             }
 
-            // Hitung score dalam persentase
             $finalScore = ($totalScore / $totalQuestions) * 100;
 
-            // Simpan ke leaderboard
             $leaderboard = Leaderboard::create([
                 'user_id' => auth()->id(),
                 'quiz_id' => $userQuiz->quiz_id,

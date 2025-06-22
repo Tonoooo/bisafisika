@@ -26,27 +26,22 @@ class Question extends Model
 
     public function getRandomRangesAttribute($value)
     {
-        Log::info('Raw Random Ranges Retrieved', ['value' => $value]);
         return $value ? $value : '';
     }
 
     public function getRandomVariablesAttribute()
     {
-        Log::info('Starting Random Variables Hydration', ['random_ranges' => $this->random_ranges]);
 
         $ranges = $this->random_ranges ? explode(';', $this->random_ranges) : [];
         $variables = [];
 
-        Log::info('Exploded Ranges', ['ranges' => $ranges]);
 
         foreach ($ranges as $index => $range) {
             if (empty($range)) {
-                Log::warning('Empty range encountered at index ' . $index, ['range' => $range]);
                 continue;
             }
 
             $parts = explode('|', $range);
-            Log::info('Parsed Range Parts at index ' . $index, ['range' => $range, 'parts' => $parts]);
 
             if (count($parts) === 4) {
                 $variabel = trim(str_replace(['%', '%'], '', $parts[0]));
@@ -56,24 +51,18 @@ class Question extends Model
                     'max_value' => floatval($parts[2]),
                     'type' => strtolower(trim($parts[3])),
                 ];
-                Log::info('Successfully Parsed Variable at index ' . $index, ['variable' => $variables[count($variables) - 1]]);
             } else {
-                Log::warning('Invalid range format at index ' . $index, ['range' => $range, 'parts_count' => count($parts)]);
+                //
             }
         }
 
-        Log::info('Hydrated Random Variables', ['variables' => $variables]);
 
-        if (empty($variables)) {
-            Log::warning('No valid variables hydrated');
-        }
 
         return $variables;
     }
 
     public function setRumusAttribute($value)
     {
-        Log::info('Rumus Before Save', ['value' => $value]);
 
         if (empty($value)) {
             $this->attributes['rumus'] = null;
@@ -92,7 +81,6 @@ class Question extends Model
 
         $this->attributes['rumus'] = json_encode($formatted);
 
-        Log::info('Rumus After Format', ['formatted' => $this->attributes['rumus']]);
     }
 
     public function getRumusAttribute($value)
@@ -124,12 +112,4 @@ class Question extends Model
 
         return $formatted;
     }
-
-    // public function getImagePathAttribute($value)
-    // {
-    //     if ($value) {
-    //         return Storage::disk('public')->url($value);
-    //     }
-    //     return null;
-    // }
 }

@@ -14,7 +14,6 @@ class EditQuestion extends EditRecord
     {
         Log::info('Form Data Before Save', ['data' => $data]);
 
-        // Proses random_variables menjadi teks sederhana
         if (isset($data['random_variables']) && is_array($data['random_variables']) && !empty(array_filter($data['random_variables']))) {
             $ranges = [];
             foreach ($data['random_variables'] as $item) {
@@ -37,7 +36,6 @@ class EditQuestion extends EditRecord
             throw new \Exception('Random variables are required.');
         }
 
-        // Hapus random_variables dari data agar tidak disimpan sebagai kolom
         unset($data['random_variables']);
 
         return $data;

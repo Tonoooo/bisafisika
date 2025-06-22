@@ -31,26 +31,22 @@ class QuizQuestion extends Component
         $this->question = $userQuiz->userQuestions[$this->questionIndex];
         $this->totalQuestions = $userQuiz->userQuestions->count();
         
-        // Calculate remaining time
         $startTime = $userQuiz->created_at;
-        $timeLimit = $userQuiz->quiz->time_limit * 60; // Convert minutes to seconds
+        $timeLimit = $userQuiz->quiz->time_limit * 60; 
         $elapsedTime = now()->diffInSeconds($startTime);
         $this->timeLeft = max(0, $timeLimit - $elapsedTime);
 
-        // Jika waktu habis, selesaikan kuis
         if ($this->timeLeft <= 0) {
             $this->handleTimeUp();
             return;
         }
 
-        // Shuffle the answers only if they haven't been shuffled and stored before
         if (!isset($this->question->question->shuffled_answers)) {
             $answers = json_decode($this->question->answers, true);
             shuffle($answers);
             $this->question->question->shuffled_answers = collect($answers);
         }
         
-        // Load existing answer if available
         $existingAnswer = UserAnswer::where('user_question_id', $this->question->id)->first();
         if ($existingAnswer) {
             $this->answer = $existingAnswer->answer_content;
@@ -83,7 +79,6 @@ class QuizQuestion extends Component
     {
         $userQuiz = UserQuiz::findOrFail($this->userQuizId);
         
-        // Simpan jawaban kosong untuk soal yang belum dijawab
         foreach ($userQuiz->userQuestions as $userQuestion) {
             if (!$userQuestion->userAnswers()->exists()) {
                 UserAnswer::create([
@@ -94,7 +89,6 @@ class QuizQuestion extends Component
             }
         }
 
-        // Tandai kuis sebagai selesai
         $userQuiz->update(['is_completed' => true]);
         
         return redirect()->route('quiz.results', $this->userQuizId);
@@ -128,10 +122,8 @@ class QuizQuestion extends Component
 
     public function submitAnswer()
     {
-        // Simpan jawaban saat ini
         $this->saveCurrentAnswer();
 
-        // Lanjut ke soal berikutnya atau selesai
         if ($this->questionIndex + 1 < $this->totalQuestions) {
             return redirect()->route('quiz.question', [
                 'userQuizId' => $this->userQuizId, 
@@ -152,7 +144,6 @@ class QuizQuestion extends Component
 
     public function render()
     {
-        // Pastikan jawaban yang ditampilkan valid
         $answers = json_decode($this->question->answers, true);
         if (is_array($answers)) {
             $validAnswers = array_filter($answers, function($answer) {

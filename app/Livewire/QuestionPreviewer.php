@@ -34,29 +34,22 @@ class QuestionPreviewer extends Component
             
             $this->generatePreview();
         } else {
-            // Handle case where no preview data is available, e.g., redirect or show message
             return redirect()->route('questions.create');
         }
     }
 
     public function generatePreview()
     {
-        // Generate random values based on the provided ranges
         $randomValues = $this->generateRandomValues($this->questionContent, $this->rumus, (object)[
             'random_ranges' => $this->randomVariables
         ]);
-        Log::info('Previewer Generated Random Values', ['values' => $randomValues]);
 
-        // Process rumus to get calculated variables
         $rumusValues = $this->processRumus($this->rumus, $randomValues, (object)[
             'precision' => 3
         ]);
-        Log::info('Previewer Processed Rumus Values', ['values' => $rumusValues]);
 
-        // Replace placeholders in question content
         $this->previewQuestionText = $this->replacePlaceholders($this->questionContent, array_merge($randomValues, $rumusValues));
 
-        // Replace placeholders in answers and shuffle
         $this->previewAnswers = $this->replacePlaceholdersInAnswers($this->answers, $randomValues, $rumusValues);
         shuffle($this->previewAnswers);
 

@@ -121,7 +121,7 @@ class AdminPanelProvider extends PanelProvider
                     ]);
                 } elseif ($user->roles->contains('name', 'guru')) {
                     $items = array_merge($items, [
-                        NavigationItem::make('Leaderboard')
+                        NavigationItem::make('Siswa')
                             ->icon('heroicon-o-trophy')
                             ->url(fn (): string => \App\Filament\Resources\LeaderboardResource::getUrl()),
                         NavigationItem::make('Take Quiz')

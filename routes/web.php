@@ -9,12 +9,10 @@ use Illuminate\Support\Facades\Route;
 // Rute publik untuk registrasi
 //Route::get('/register', RegisterUser::class)->name('register');
 
-// Rute untuk halaman "Tunggu Verifikasi"
 Route::get('/teacher/waiting', function () {
     return view('livewire.waiting', [], ['layout' => 'layouts.guest']);
 })->name('teacher.waiting')->middleware('auth');
 
-// Rute yang memerlukan autentikasi
 Route::middleware(['auth'])->group(function () {
     Route::get('/quizzes', QuizList::class)->name('quiz.list');
     Route::get('/quiz/{quizId}/start', [QuizController::class, 'startQuiz'])->name('quiz.start');

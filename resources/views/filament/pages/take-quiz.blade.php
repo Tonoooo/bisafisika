@@ -32,7 +32,6 @@
                 @endforeach
             </div>
         @else
-            {{-- Bagian kode quiz tidak perlu diubah --}}
             <div class="max-w-3xl p-6 mx-auto bg-white rounded-lg shadow">
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-xl font-semibold text-gray-900">{{ $selectedBab->name }}</h2>

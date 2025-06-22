@@ -19,12 +19,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;800&display=swap" rel="stylesheet">
 
     <style>
-        /* Mendefinisikan palet warna kustom dan font utama */
         :root {
-            --bg-main: #f6f0f0; /* Latar belakang utama yang sangat terang */
-            --brand-secondary: #f2e2b1; /* Aksen warna krem/pasir */
-            --brand-primary: #d5c7a3; /* Warna utama yang lebih gelap untuk kontras */
-            --text-dark: #4a4137; /* Warna teks gelap yang serasi dengan palet */
+            --bg-main: #f6f0f0; 
+            --brand-secondary: #f2e2b1; 
+            --brand-primary: #d5c7a3; 
+            --text-dark: #4a4137; 
             --text-light: #796e60;
         }
 
@@ -34,16 +33,14 @@
             font-family: 'Poppins', sans-serif;
         }
 
-        /* Kustomisasi warna untuk tombol dan elemen utama */
         .bg-brand-primary { background-color: var(--brand-primary); }
-        .hover\:bg-brand-primary-dark:hover { background-color: #c1b38e; } /* Warna hover yang sedikit lebih gelap */
+        .hover\:bg-brand-primary-dark:hover { background-color: #c1b38e; } 
         .bg-brand-secondary { background-color: var(--brand-secondary); }
         .text-brand-primary { color: var(--brand-primary); }
         .text-dark { color: var(--text-dark); }
         .text-light { color: var(--text-light); }
         .border-brand-primary { border-color: var(--brand-primary); }
 
-        /* Transisi halus untuk elemen interaktif */
         .transition-all-smooth {
             transition: all 0.3s ease-in-out;
         }
