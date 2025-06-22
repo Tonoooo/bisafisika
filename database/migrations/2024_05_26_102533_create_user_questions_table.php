@@ -16,8 +16,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_quiz_id')->constrained()->onDelete('cascade');
             $table->foreignId('question_id')->constrained()->onDelete('cascade');
-            $table->text('question_text'); // stores the question with generated numbers
-            $table->json('random_values'); // stores the generated random values
+            $table->text('question_text'); 
+            $table->json('random_values'); 
             $table->timestamps();
         });
 

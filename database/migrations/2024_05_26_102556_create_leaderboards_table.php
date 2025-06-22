@@ -18,6 +18,8 @@ return new class extends Migration
             $table->foreignId('quiz_id')->constrained()->onDelete('cascade');
             $table->integer('score');
             $table->timestamps();
+            // total_score
+            $table->integer('total_score');
         });
 
     }

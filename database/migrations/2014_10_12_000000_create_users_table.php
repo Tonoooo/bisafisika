@@ -19,6 +19,14 @@ return new class extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
+            // school_id
+            $table->foreignId('school_id')->constrained('schools');
+            // level
+            $table->enum('level', ['1', '2', '3']);
+            // class
+            $table->string('class');
+            // status
+            $table->enum('status', ['pending', 'verified']);
         });
     }
 
