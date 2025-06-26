@@ -25,7 +25,7 @@ class CreateQuestion extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        Log::info('Form Data Before Create', ['data' => $data]);
+        // Log::info('Form Data Before Create', ['data' => $data]);
 
         if (isset($data['random_variables']) && is_array($data['random_variables']) && !empty(array_filter($data['random_variables']))) {
             $ranges = [];
@@ -39,13 +39,13 @@ class CreateQuestion extends CreateRecord
                         $item['type'] ?? 'integer',
                     ]);
                 } else {
-                    Log::warning('Invalid random variable item', ['item' => $item]);
+                    // Log::warning('Invalid random variable item', ['item' => $item]);
                 }
             }
             $data['random_ranges'] = implode(';', $ranges);
-            Log::info('Random Ranges Before Save', ['random_ranges' => $data['random_ranges']]);
+            // Log::info('Random Ranges Before Save', ['random_ranges' => $data['random_ranges']]);
         } else {
-            Log::warning('No Valid Random Variables Provided');
+            // Log::warning('No Valid Random Variables Provided');
             throw new \Exception('Random variables are required.');
         }
 
@@ -57,7 +57,7 @@ class CreateQuestion extends CreateRecord
     protected function beforeSave(): void
     {
         $data = $this->form->getState();
-        Log::info('Form State Before Save', ['state' => $data]);
+        // Log::info('Form State Before Save', ['state' => $data]);
         if (!isset($data['random_variables']) || empty(array_filter($data['random_variables']))) {
             throw new \Exception('Random variables cannot be empty.');
         }

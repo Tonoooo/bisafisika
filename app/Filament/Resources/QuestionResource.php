@@ -107,21 +107,21 @@ class QuestionResource extends Resource
                     ->rules(['required', 'array', 'min:1'])
                     ->columnSpanFull()
                     ->afterStateHydrated(function ($component, $state, $record) {
-                        Log::info('Random Variables After State Hydrated', [
-                            'state' => $state,
-                            'record' => $record ? $record->toArray() : null,
-                        ]);
+                        // Log::info('Random Variables After State Hydrated', [
+                        //     'state' => $state,
+                        //     'record' => $record ? $record->toArray() : null,
+                        // ]);
 
                         if (is_null($state) && $record) {
                             $randomVariables = $record->random_variables;
-                            Log::info('Hydrating Random Variables from Accessor', ['random_variables' => $randomVariables]);
+                            // Log::info('Hydrating Random Variables from Accessor', ['random_variables' => $randomVariables]);
                             $component->state($randomVariables);
                         }
                     })
                     ->afterStateUpdated(function ($state) {
-                        Log::info('Random Variables State Updated', ['state' => $state]);
+                        // Log::info('Random Variables State Updated', ['state' => $state]);
                         if (empty($state)) {
-                            Log::warning('Random Variables is Empty on Update');
+                            // Log::warning('Random Variables is Empty on Update');
                         }
                     }),
 
@@ -160,7 +160,7 @@ class QuestionResource extends Resource
                     ->addActionLabel('Tambah Rumus')
                     ->reorderable(false)
                     ->afterStateHydrated(function ($component, $state) {
-                        Log::info('Rumus State Hydrated', ['state' => $state]);
+                        // Log::info('Rumus State Hydrated', ['state' => $state]);
                     }),
 
                 Forms\Components\Repeater::make('answers')
@@ -176,15 +176,15 @@ class QuestionResource extends Resource
                     ->minItems(2)
                     ->required()
                     ->afterStateHydrated(function ($component, $state, $record) {
-                        Log::info('Answers After State Hydrated', [
-                            'state' => $state,
-                            'record' => $record ? $record->toArray() : null,
-                        ]);
+                        // Log::info('Answers After State Hydrated', [
+                        //     'state' => $state,
+                        //     'record' => $record ? $record->toArray() : null,
+                        // ]);
 
                         if (is_null($state) && $record) {
                             $answers = $record->attributes['answers'] ?? [];
                             $answers = is_string($answers) ? json_decode($answers, true) : $answers;
-                            Log::info('Hydrating Answers from Record', ['answers' => $answers]);
+                            // Log::info('Hydrating Answers from Record', ['answers' => $answers]);
                             $component->state($answers);
                         }
                     }),

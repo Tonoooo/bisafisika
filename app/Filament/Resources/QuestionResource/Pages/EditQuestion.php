@@ -12,7 +12,7 @@ class EditQuestion extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
-        Log::info('Form Data Before Save', ['data' => $data]);
+        // Log::info('Form Data Before Save', ['data' => $data]);
 
         if (isset($data['random_variables']) && is_array($data['random_variables']) && !empty(array_filter($data['random_variables']))) {
             $ranges = [];
@@ -26,13 +26,13 @@ class EditQuestion extends EditRecord
                         $item['type'] ?? 'integer',
                     ]);
                 } else {
-                    Log::warning('Invalid random variable item', ['item' => $item]);
+                    // Log::warning('Invalid random variable item', ['item' => $item]);
                 }
             }
             $data['random_ranges'] = implode(';', $ranges);
-            Log::info('Random Ranges Before Save', ['random_ranges' => $data['random_ranges']]);
+            // Log::info('Random Ranges Before Save', ['random_ranges' => $data['random_ranges']]);
         } else {
-            Log::warning('No Valid Random Variables Provided');
+            // Log::warning('No Valid Random Variables Provided');
             throw new \Exception('Random variables are required.');
         }
 
@@ -43,14 +43,14 @@ class EditQuestion extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        Log::info('Form Data Before Fill', ['data' => $data]);
+        // Log::info('Form Data Before Fill', ['data' => $data]);
         return $data;
     }
 
     protected function beforeSave(): void
     {
         $data = $this->form->getState();
-        Log::info('Form State Before Save', ['state' => $data]);
+        // Log::info('Form State Before Save', ['state' => $data]);
         if (!isset($data['random_variables']) || empty(array_filter($data['random_variables']))) {
             throw new \Exception('Random variables cannot be empty.');
         }
