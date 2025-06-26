@@ -57,7 +57,7 @@ class QuestionResource extends Resource
                                             $component->addError('variabel', 'Placeholder harus unik di dalam soal ini.');
                                         }
                                     })
-                                    ->helperText('Misalnya: panjang, gaya')
+                                    ->helperText('Misalnya:panjang,gaya.Tanpa spasi')
                                     ->placeholder('Masukkan placeholder, misalnya randomnumber1'),
 
                                 Forms\Components\Select::make('type')

@@ -161,41 +161,35 @@ class QuizController extends Controller
                 if ($key && isset($item[$key])) {
                     $expression = $item[$key];
                     
-
                     foreach ($randomValues as $placeholder => $value) {
                         $expression = str_replace($placeholder, (string)$value, $expression);
-                        
                     }
 
                     foreach ($rumusValues as $placeholder => $value) {
                         $expression = str_replace($placeholder, (string)$value, $expression);
-                        
                     }
 
                     foreach ($this->constants as $constant => $value) {
                         $expression = str_replace($constant, (string)$value, $expression);
-                        
                     }
 
                     $expression = $this->formatExpression($expression);
 
                     $result = $this->evaluateExpression($expression);
-                    
 
                     if ($result === 'Error') {
                         return [];
                     }
 
                     if (is_numeric($result)) {
-                    if (abs($result) > 1000000 || (abs($result) > 0 && abs($result) < 0.000001)) {
-                            $result = sprintf('%.6e', $result);
-                    } else {
-                        $result = round($result, $precision);
+                        if (abs($result) > pow(10, $precision) || (abs($result) > 0 && abs($result) < pow(10, -$precision))) {
+                            $result = sprintf('%.' . $precision . 'e', $result);
+                        } else {
+                            $result = round($result, $precision);
                         }
                     }
 
                     $rumusValues['%variabelhasil' . ($index + 1) . '%'] = $result;
-                    
                 }
             }
         }

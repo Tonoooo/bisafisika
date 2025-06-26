@@ -49,6 +49,41 @@ class DatabaseSeeder extends Seeder
             ['id' => 23, 'name' => 'force_delete_question', 'guard_name' => 'web'],
             ['id' => 24, 'name' => 'force_delete_any_question', 'guard_name' => 'web'],
             ['id' => 25, 'name' => 'view_quiz', 'guard_name' => 'web'],
+            ['id' => 26, 'name' => 'view_any_quiz', 'guard_name' => 'web'],
+            ['id' => 27, 'name' => 'create_quiz', 'guard_name' => 'web'],
+            ['id' => 28, 'name' => 'update_quiz', 'guard_name' => 'web'],
+            ['id' => 29, 'name' => 'delete_quiz', 'guard_name' => 'web'],
+            ['id' => 30, 'name' => 'delete_any_quiz', 'guard_name' => 'web'],
+            ['id' => 31, 'name' => 'force_delete_quiz', 'guard_name' => 'web'],
+            ['id' => 32, 'name' => 'force_delete_any_quiz', 'guard_name' => 'web'],
+            ['id' => 33, 'name' => 'restore_quiz', 'guard_name' => 'web'],
+            ['id' => 34, 'name' => 'restore_any_quiz', 'guard_name' => 'web'],
+            ['id' => 35, 'name' => 'replicate_quiz', 'guard_name' => 'web'],
+            ['id' => 36, 'name' => 'reorder_quiz', 'guard_name' => 'web'],
+            ['id' => 37, 'name' => 'view_user', 'guard_name' => 'web'],
+            ['id' => 38, 'name' => 'view_any_user', 'guard_name' => 'web'],
+            ['id' => 39, 'name' => 'create_user', 'guard_name' => 'web'],
+            ['id' => 40, 'name' => 'update_user', 'guard_name' => 'web'],
+            ['id' => 41, 'name' => 'delete_user', 'guard_name' => 'web'],
+            ['id' => 42, 'name' => 'delete_any_user', 'guard_name' => 'web'],
+            ['id' => 43, 'name' => 'force_delete_user', 'guard_name' => 'web'],
+            ['id' => 44, 'name' => 'force_delete_any_user', 'guard_name' => 'web'],
+            ['id' => 45, 'name' => 'restore_user', 'guard_name' => 'web'],
+            ['id' => 46, 'name' => 'restore_any_user', 'guard_name' => 'web'],
+            ['id' => 47, 'name' => 'replicate_user', 'guard_name' => 'web'],
+            ['id' => 48, 'name' => 'reorder_user', 'guard_name' => 'web'],
+            ['id' => 49, 'name' => 'view_role', 'guard_name' => 'web'],
+            ['id' => 50, 'name' => 'view_any_role', 'guard_name' => 'web'],
+            ['id' => 51, 'name' => 'create_role', 'guard_name' => 'web'],
+            ['id' => 52, 'name' => 'update_role', 'guard_name' => 'web'],
+            ['id' => 53, 'name' => 'delete_role', 'guard_name' => 'web'],
+            ['id' => 54, 'name' => 'delete_any_role', 'guard_name' => 'web'],
+            ['id' => 55, 'name' => 'force_delete_role', 'guard_name' => 'web'],
+            ['id' => 56, 'name' => 'force_delete_any_role', 'guard_name' => 'web'],
+            ['id' => 57, 'name' => 'restore_role', 'guard_name' => 'web'],
+            ['id' => 58, 'name' => 'restore_any_role', 'guard_name' => 'web'],
+            ['id' => 59, 'name' => 'replicate_role', 'guard_name' => 'web'],
+            ['id' => 60, 'name' => 'reorder_role', 'guard_name' => 'web'],
         ];
         foreach ($permissions as $perm) {
             \DB::table('permissions')->updateOrInsert(['id' => $perm['id']], [
@@ -60,7 +95,7 @@ class DatabaseSeeder extends Seeder
         }
 
         // Seeder role_has_permissions (semua permission_id 1-25 untuk role_id 1)
-        for ($i = 1; $i <= 25; $i++) {
+        for ($i = 1; $i <= 60; $i++) {
             DB::table('role_has_permissions')->updateOrInsert([
                 'permission_id' => $i,
                 'role_id' => 1,
