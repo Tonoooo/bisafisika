@@ -31,9 +31,9 @@
             <label for="level" class="block text-sm font-semibold text-gray-700 dark:text-gray-800 mb-1">Tingkat</label>
             <select wire:model="level" id="level" class="block w-full border-gray-300 rounded-lg shadow-sm p-3 bg-white focus:border-primary-500 focus:ring-primary-500">
                 <option value="">Pilih Tingkat</option>
-                <option value="1">Kelas 1</option>
-                <option value="2">Kelas 2</option>
-                <option value="3">Kelas 3</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
                 <option value="">Lainnya</option>
             </select>
             @error('level') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror

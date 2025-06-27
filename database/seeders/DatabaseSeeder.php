@@ -94,7 +94,6 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        // Seeder role_has_permissions (semua permission_id 1-25 untuk role_id 1)
         for ($i = 1; $i <= 60; $i++) {
             DB::table('role_has_permissions')->updateOrInsert([
                 'permission_id' => $i,
@@ -102,7 +101,6 @@ class DatabaseSeeder extends Seeder
             ], []);
         }
 
-        // Seeder model_has_roles
         \DB::table('model_has_roles')->updateOrInsert([
             'role_id' => 1,
             'model_type' => 'App\\Models\\User',
