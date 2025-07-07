@@ -123,7 +123,10 @@
     </main>
 
     <footer class="mt-12 py-8 bg-brand-primary text-center">
-        <p class="text-white font-medium">&copy; {{ date('Y') }} Politeknik Negeri Bandung. All rights reserved.</p>
+        <p class="text-white font-medium">© {{ date('Y') }} Politeknik Negeri Bandung. All rights reserved.</p>
+        <p class="text-white text-sm mt-2 px-4">
+            Aplikasi ini dibuat sebagai luaran program Pengabdian kepada Masyarakat (PkM) tim dosen Fisika Terapan Politeknik Negeri Bandung kepada MGMP Fisika Kota Cimahi di tahun 2025
+        </p>
     </footer>
 
 </body>

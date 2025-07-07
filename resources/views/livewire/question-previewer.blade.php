@@ -19,7 +19,9 @@
                 <p class="mb-6 text-gray-600">Berikut adalah pratinjau soal Anda:</p>
                 <div>
                     <div class="mb-6">
-                        <p class="mb-4 text-lg">{!! $previewQuestionText !!}</p>
+                        <p class="mb-4 text-lg">
+                            {!! preg_replace_callback('/\\d+\\.\\d+/', function($m) { return number_format($m[0], 2, '.', ''); }, $previewQuestionText) !!}
+                        </p>
                         @if($previewImagePath)
                             <img src="{{ asset('storage/' . $previewImagePath) }}" alt="Question Image" class="mb-4 rounded-lg shadow-md">
                         @endif
@@ -31,7 +33,7 @@
                                            value="{{ $answerOption['content'] }}" 
                                            class="text-blue-600 form-radio" disabled>
                                     <span class="ml-2 text-gray-700">
-                                        {!! $answerOption['content'] !!}
+                                        {!! preg_replace_callback('/\\d+\\.\\d+/', function($m) { return number_format($m[0], 2, '.', ''); }, $answerOption['content']) !!}
                                     </span>
                                 </label>
                             </div>

@@ -52,7 +52,9 @@
                 <p class="mb-6 text-gray-600">Question {{ $questionIndex + 1 }} of {{ $totalQuestions }}</p>
                 <form wire:submit.prevent="submitAnswer">
                     <div class="mb-6">
-                        <p class="mb-4 text-lg">{!! $question->question_text !!}</p>
+                        <p class="mb-4 text-lg">
+                            {!! preg_replace_callback('/\\d+\\.\\d+/', function($m) { return number_format($m[0], 2, '.', ''); }, $question->question_text)  !!}
+                        </p>
                         @if($question->image_path)
                             <img src="{{ asset('storage/' . $question->image_path) }}" alt="Question Image" class="mb-4 rounded-lg shadow-md">
                         @endif
@@ -65,8 +67,7 @@
                                            value="{{ $answerOption['content'] }}" 
                                            class="text-blue-600 form-radio">
                                     <span class="ml-2 text-gray-700">
-                                        {{-- {!! '$$' . $answerOption['content'] . '$$' !!} --}}
-                                        {!! $answerOption['content'] !!}
+                                        {!! preg_replace_callback('/\\d+\\.\\d+/', function($m) { return number_format($m[0], 2, '.', ''); }, $answerOption['content']) !!}
                                     </span>
                                 </label>
                             </div>
