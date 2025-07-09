@@ -26,7 +26,7 @@
                             <div class="p-2 mb-2 rounded-full">
                                 <x-heroicon-o-book-open class="w-7 h-7 sm:w-7 sm:h-7" style="color: {{ $color['icon'] }}; width: 28px; height: 28px;" />
                             </div>
-                            <h3 class="text-sm sm:text-base font-medium text-gray-700 truncate w-full" style="font-size: 11px;">{{ $bab->name }}</h3>
+                            <h3 class="text-sm sm:text-base font-medium text-gray-700 break-words w-full" style="font-size: 11px; word-break: break-all;">{{ $bab->name }}</h3>
                         </div>
                     </div>
                 @endforeach
