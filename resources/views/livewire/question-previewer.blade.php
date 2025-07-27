@@ -33,7 +33,7 @@
                                            value="{{ $answerOption['content'] }}" 
                                            class="text-blue-600 form-radio" disabled>
                                     <span class="ml-2 text-gray-700">
-                                        {!! preg_replace_callback('/\\d+\\.\\d+/', function($m) { return number_format($m[0], 2, '.', ''); }, $answerOption['content']) !!}
+                                        {!! preg_replace_callback('/\\d+\\.\\d+/', function($m) { return number_format($m[0], 2, '.', ''); }, '$$' . str_replace(' ', '\\ ', $answerOption['content']) . '$$') !!}
                                     </span>
                                 </label>
                             </div>
