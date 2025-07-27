@@ -12,13 +12,12 @@
             </div>
             <div class="flex items-center text-red-600 font-medium">
                 <x-heroicon-o-clock class="w-5 h-5 mr-1.5" />
-                <span x-data="{ timeLeft: {{ $timeLeft }} }" 
+                <span x-data="{ timeLeft: {{ $timeLeft }} }"
                       x-init="
-                        let timer = setInterval(() => { 
-                            if(timeLeft > 0) {
+                        let timer = setInterval(() => {
+                            if (timeLeft > 0) {
                                 timeLeft--;
-                                // Ubah warna menjadi merah jika waktu kurang dari 5 menit
-                                if(timeLeft <= 300) {
+                                if (timeLeft <= 300) {
                                     $el.classList.add('text-red-600', 'font-bold');
                                 }
                             } else {
@@ -26,16 +25,6 @@
                                 window.location.href = '{{ route('quiz.results', $userQuizId) }}';
                             }
                         }, 1000);
-
-                        // Polling untuk mengecek waktu di server setiap 30 detik
-                        let serverTimer = setInterval(() => {
-                            @this.getTimeLeft().then(time => {
-                                if(time <= 0) {
-                                    clearInterval(serverTimer);
-                                    window.location.href = '{{ route('quiz.results', $userQuizId) }}';
-                                }
-                            });
-                        }, 30000);
                       "
                       x-text="Math.floor(timeLeft / 60) + ':' + (timeLeft % 60).toString().padStart(2, '0')"
                       class="transition-colors duration-300">
@@ -61,10 +50,10 @@
                         @foreach($question->question->shuffled_answers as $answerOption)
                             <div class="mb-2">
                                 <label class="flex items-center">
-                                    <input type="radio" 
-                                           name="answer_{{ $question->id }}" 
-                                           wire:model="answer" 
-                                           value="{{ $answerOption['content'] }}" 
+                                    <input type="radio"
+                                           name="answer_{{ $question->id }}"
+                                           wire:model="answer"
+                                           value="{{ $answerOption['content'] }}"
                                            class="text-blue-600 form-radio">
                                     <span class="ml-2 text-gray-700">
                                         {!! preg_replace_callback('/\\d+\\.\\d+/', function($m) { return number_format($m[0], 2, '.', ''); }, '$$' . str_replace(' ', '\\ ', $answerOption['content']) . '$$') !!}
@@ -76,7 +65,7 @@
 
                     <div class="flex justify-between">
                         @if($questionIndex > 0)
-                            <a href="{{ route('quiz.question', ['userQuizId' => $userQuizId, 'questionIndex' => $questionIndex - 1]) }}" 
+                            <a href="{{ route('quiz.question', ['userQuizId' => $userQuizId, 'questionIndex' => $questionIndex - 1]) }}"
                                class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
                                 Previous Question
                             </a>
@@ -90,9 +79,17 @@
                 </form>
             </div>
             <script>
+                function renderMathJax() {
+                    if (window.MathJax) {
+                        MathJax.typesetPromise();
+                    }
+                }
                 document.addEventListener('livewire:load', function () {
                     window.Livewire.hook('element.updated', (el, component) => {
-                        MathJax.typesetPromise();
+                        renderMathJax();
+                    });
+                    window.Livewire.hook('message.processed', (message, component) => {
+                        renderMathJax();
                     });
                 });
             </script>
@@ -102,7 +99,7 @@
         #mobile-menu a[href="/admin"] {
             display: none !important;
         }
-        
+
         /*
         .filament-sidebar-item[href="/"] {
             display: none !important;

@@ -31,6 +31,31 @@
         @include('layouts.footer')
     </div>
     @livewire('notifications')
-
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['\\(', '\\)']],
+                displayMath: [['$$', '$$']]
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        function renderMathJax() {
+            if (window.MathJax) {
+                setTimeout(() => {
+                    MathJax.typesetPromise();
+                }, 50);
+            }
+        }
+        document.addEventListener('livewire:load', function () {
+            window.Livewire.hook('element.updated', (el, component) => {
+                renderMathJax();
+            });
+            window.Livewire.hook('message.processed', (message, component) => {
+                renderMathJax();
+            });
+        });
+    </script>
 </body>
 </html>
