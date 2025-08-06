@@ -147,7 +147,7 @@ class QuestionResource extends Resource
                                         $index = array_search($uuid, $keys) !== false ? array_search($uuid, $keys) + 1 : 1;
                                         return "variabelhasil" . $index;
                                     })
-                                    ->helperText('Gunakan operator: +, -, *, /. Fungsi: cos(), sin(), tan() (dalam derajat), sqrt(). Pangkat: a**b (contoh: 2**3). Desimal gunakan titik(.). Contoh: 2 * %tegangan% * cos(30) + sqrt(16)'),
+                                    ->helperText('Gunakan operator: +, -, *, /. Fungsi: cos(), sin(), tan() (dalam derajat), sqrt(), log(), ln(). Pangkat: a**b (contoh: 2**3). Desimal gunakan titik(.). Contoh: 2 * %tegangan% * cos(30) + sqrt(16) + log(100)'),
 
                                 Forms\Components\Textarea::make('variabel_rumus')
                                     ->label('Rumus')

@@ -211,7 +211,7 @@ class QuizController extends Controller
                     }
 
                     foreach ($this->constants as $constant => $value) {
-                        $expression = str_replace($constant, (string)$value, $expression);
+                        $expression = preg_replace('/\b' . preg_quote($constant, '/') . '\b/', (string)$value, $expression);
                         // Log::info('After replacing constant', [
                         //     'constant' => $constant,
                         //     'value' => $value,
@@ -309,6 +309,14 @@ class QuizController extends Controller
             
             $expression = preg_replace_callback('/tan\(([^)]+)\)/', function($matches) {
                 return 'tan(deg2rad(' . $matches[1] . '))';
+            }, $expression);
+
+            $expression = preg_replace_callback('/log\(([^)]+)\)/', function($matches) {
+                return 'log10(' . $matches[1] . ')';
+            }, $expression);
+
+            $expression = preg_replace_callback('/ln\(([^)]+)\)/', function($matches) {
+                return 'log(' . $matches[1] . ')';
             }, $expression);
 
             $result = eval('return ' . $expression . ';');
