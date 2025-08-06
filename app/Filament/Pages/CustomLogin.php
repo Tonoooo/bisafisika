@@ -33,11 +33,11 @@ class CustomLogin extends BaseLogin
                 ->label('Daftar di sini')
                 ->url(route('register'))
                 ->color('gray'),
-            Action::make('forgot-password')
-                ->label('Lupa Password?')
-                ->url(route('filament.admin.auth.password-reset.request'))
-                ->color('gray')
-                ->size('sm'),
+            // Action::make('forgot-password')
+            //     ->label('Lupa Password?')
+            //     ->url(route('filament.admin.auth.password-reset.request'))
+            //     ->color('gray')
+            //     ->size('sm'),
         ];
     }
 
