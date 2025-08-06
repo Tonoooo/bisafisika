@@ -33,7 +33,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login(\App\Filament\Pages\CustomLogin::class)
             //->registration()
-            ->passwordReset()
+            ->passwordReset(\App\Filament\Pages\CustomPasswordResetRequest::class)
             ->profile()
             ->brandLogo(asset('images/banner_logo.png'))
             ->brandLogoHeight('60px')
