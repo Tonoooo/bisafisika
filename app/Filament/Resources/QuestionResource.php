@@ -33,7 +33,7 @@ class QuestionResource extends Resource
                         Forms\Components\Grid::make(5)
                             ->schema([
                                 Forms\Components\TextInput::make('variabel')
-                                    ->label('Placeholder')
+                                    ->label('Nama Variabel')
                                     ->default(function ($get, $set, $state, $component) {
                                         $statePath = $component->getStatePath();
                                         $items = $get('../../random_variables') ?? [];
