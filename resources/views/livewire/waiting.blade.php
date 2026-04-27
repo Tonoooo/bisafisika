@@ -78,7 +78,7 @@
                 $message .= " dari " . urlencode(auth()->user()->school->name);
             }
 
-            $whatsappLink = "https://wa.me/6285221867597?text=" . $message;
+            $whatsappLink = "https://wa.me/6281394680918?text=" . $message;
         @endphp
 
         .whatsapp-button {

@@ -33,7 +33,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login(\App\Filament\Pages\CustomLogin::class)
             //->registration()
-            ->passwordReset()
+            ->passwordReset(\App\Filament\Pages\CustomPasswordResetRequest::class)
             ->profile()
             ->brandLogo(asset('images/banner_logo.png'))
             ->brandLogoHeight('60px')
@@ -124,6 +124,15 @@ class AdminPanelProvider extends PanelProvider
                         NavigationItem::make('Siswa')
                             ->icon('heroicon-o-trophy')
                             ->url(fn (): string => \App\Filament\Resources\LeaderboardResource::getUrl()),
+                        NavigationItem::make('Questions')
+                            ->icon('heroicon-o-question-mark-circle')
+                            ->url(fn (): string => \App\Filament\Resources\QuestionResource::getUrl()),
+                        NavigationItem::make('Quiz')
+                            ->icon('heroicon-o-academic-cap')
+                            ->url(fn (): string => \App\Filament\Resources\QuizResource::getUrl()),
+                        NavigationItem::make('Bab')
+                            ->icon('heroicon-o-book-open')
+                            ->url(fn (): string => \App\Filament\Resources\BabResource::getUrl()),
                         NavigationItem::make('Take Quiz')
                             ->icon('heroicon-o-academic-cap')
                             ->url(fn (): string => \App\Filament\Pages\TakeQuiz::getUrl()),
