@@ -25,6 +25,16 @@ class RegisterController extends Controller
         return view('register-teacher');
     }
 
+    public function showMahasiswaForm()
+    {
+        return view('register-mahasiswa');
+    }
+
+    public function showDosenForm()
+    {
+        return view('register-dosen');
+    }
+
     public function showLecturerForm()
     {
         return view('register-lecturer');
@@ -37,13 +47,13 @@ class RegisterController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', 'min:8'],
             'school_id' => [
-                'required_if:role,siswa',
+                'required_if:role,siswa,mahasiswa',
                 'exists:schools,id',
                 'nullable',
             ],
-            'role' => ['required', Rule::in(['siswa', 'guru', 'super_admin'])],
-            'level' => ['required_if:role,siswa', 'in:1,2,3', 'nullable'],
-            'class' => ['required_if:role,siswa', 'regex:/^[a-zA-Z]$/', 'nullable'],
+            'role' => ['required', Rule::in(['siswa', 'guru', 'super_admin', 'mahasiswa', 'dosen'])],
+            'level' => ['required_if:role,siswa,mahasiswa', 'nullable'],
+            'class' => ['required_if:role,siswa,mahasiswa', 'regex:/^[a-zA-Z]$/', 'nullable'],
         ]);
 
         $user = User::create([
@@ -51,9 +61,9 @@ class RegisterController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'school_id' => $request->school_id,
-            'level' => $request->role === 'siswa' ? $request->level : null,
-            'class' => $request->role === 'siswa' ? $request->class : null,
-            'status' => in_array($request->role, ['guru', 'super_admin']) ? 'pending' : 'verified',
+            'level' => in_array($request->role, ['siswa', 'mahasiswa']) ? $request->level : null,
+            'class' => in_array($request->role, ['siswa', 'mahasiswa']) ? $request->class : null,
+            'status' => in_array($request->role, ['guru', 'dosen', 'super_admin']) ? 'pending' : 'verified',
         ]);
 
         $user->assignRole($request->role);

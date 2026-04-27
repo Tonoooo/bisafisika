@@ -14,21 +14,39 @@
                 <p class="text-gray-600">Pilih tipe akun untuk mendaftar</p>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <a href="{{ route('register.student') }}" class="block">
-                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl cursor-pointer h-full transform hover:-translate-y-1 transition">
+                    <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl cursor-pointer h-full transform hover:-translate-y-1 transition">
                         <div class="text-center">
-                            <img src="{{ asset('images/gambar_siswa.png') }}" alt="Student" class="w-40 h-40 mx-auto mb-6">
-                            <h2 class="text-2xl font-bold text-gray-800 mb-2">Daftar sebagai Siswa</h2>
+                            <img src="{{ asset('images/gambar_siswa.png') }}" alt="Student" class="w-32 h-32 mx-auto mb-4">
+                            <h2 class="text-xl font-bold text-gray-800 mb-2">Siswa (SMA)</h2>
                         </div>
                     </div>
                 </a>
 
                 <a href="{{ route('register.teacher') }}" class="block">
-                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl cursor-pointer h-full transform hover:-translate-y-1 transition">
+                    <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl cursor-pointer h-full transform hover:-translate-y-1 transition">
                         <div class="text-center">
-                            <img src="{{ asset('images/gambar_guru.png') }}" alt="Teacher" class="w-40 h-40 mx-auto mb-6">
-                            <h2 class="text-2xl font-bold text-gray-800 mb-2">Daftar sebagai Guru</h2>
+                            <img src="{{ asset('images/gambar_guru.png') }}" alt="Teacher" class="w-32 h-32 mx-auto mb-4">
+                            <h2 class="text-xl font-bold text-gray-800 mb-2">Guru (SMA)</h2>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="{{ route('register.mahasiswa') }}" class="block">
+                    <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl cursor-pointer h-full transform hover:-translate-y-1 transition border-t-4 border-blue-500">
+                        <div class="text-center">
+                            <img src="{{ asset('images/gambar_siswa.png') }}" alt="Mahasiswa" class="w-32 h-32 mx-auto mb-4">
+                            <h2 class="text-xl font-bold text-gray-800 mb-2">Mahasiswa</h2>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="{{ route('register.dosen') }}" class="block">
+                    <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl cursor-pointer h-full transform hover:-translate-y-1 transition border-t-4 border-blue-500">
+                        <div class="text-center">
+                            <img src="{{ asset('images/gambar_guru.png') }}" alt="Dosen" class="w-32 h-32 mx-auto mb-4">
+                            <h2 class="text-xl font-bold text-gray-800 mb-2">Dosen</h2>
                         </div>
                     </div>
                 </a>

@@ -63,7 +63,7 @@ class RegisterStudent extends Component
     public function render()
     {
         return view('livewire.register-student', [
-            'schools' => School::all()
+            'schools' => School::where('type', 'sekolah')->get()
         ]);
     }
 } 

@@ -8,13 +8,13 @@ use App\Models\School;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 
-class RegisterTeacher extends Component
+class RegisterDosen extends Component
 {
     public $name;
     public $email;
     public $password;
     public $school_id;
-    public $role = 'guru';
+    public $role = 'dosen';
 
     protected function rules()
     {
@@ -42,7 +42,7 @@ class RegisterTeacher extends Component
             'status' => 'pending',
         ]);
 
-        $user->assignRole('guru');
+        $user->assignRole('dosen');
         Auth::login($user);
 
         return redirect()->route('teacher.waiting');
@@ -50,8 +50,8 @@ class RegisterTeacher extends Component
 
     public function render()
     {
-        return view('livewire.register-teacher', [
-            'schools' => School::where('type', 'sekolah')->get()
+        return view('livewire.register-dosen', [
+            'schools' => School::where('type', 'program_studi')->get()
         ]);
     }
 } 

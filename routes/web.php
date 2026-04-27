@@ -30,6 +30,8 @@ Route::get('/', function () {
 Route::get('/register', [RegisterController::class, 'showForm'])->name('register');
 Route::get('/register/student', [RegisterController::class, 'showStudentForm'])->name('register.student');
 Route::get('/register/teacher', [RegisterController::class, 'showTeacherForm'])->name('register.teacher');
+Route::get('/register/mahasiswa', [RegisterController::class, 'showMahasiswaForm'])->name('register.mahasiswa');
+Route::get('/register/dosen', [RegisterController::class, 'showDosenForm'])->name('register.dosen');
 Route::get('/register/lecturer', [RegisterController::class, 'showLecturerForm'])->name('register.lecturer');
 Route::post('/register', [RegisterController::class, 'register'])->name('register.submit');
 

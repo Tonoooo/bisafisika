@@ -8,13 +8,15 @@ use App\Models\School;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 
-class RegisterTeacher extends Component
+class RegisterMahasiswa extends Component
 {
     public $name;
     public $email;
     public $password;
     public $school_id;
-    public $role = 'guru';
+    public $level;
+    public $class;
+    public $role = 'mahasiswa';
 
     protected function rules()
     {
@@ -23,6 +25,8 @@ class RegisterTeacher extends Component
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
             'school_id' => 'nullable',
+            'level' => 'nullable',
+            'class' => 'nullable',
         ];
     }
 
@@ -33,25 +37,33 @@ class RegisterTeacher extends Component
         if ($validatedData['school_id'] === '') {
             $validatedData['school_id'] = null;
         }
+        if ($validatedData['level'] === '') {
+            $validatedData['level'] = null;
+        }
+        if ($validatedData['class'] === '') {
+            $validatedData['class'] = null;
+        }
 
         $user = User::create([
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],
             'password' => Hash::make($validatedData['password']),
             'school_id' => $validatedData['school_id'],
-            'status' => 'pending',
+            'level' => $validatedData['level'],
+            'class' => $validatedData['class'],
+            'status' => 'verified',
         ]);
 
-        $user->assignRole('guru');
+        $user->assignRole('mahasiswa');
         Auth::login($user);
 
-        return redirect()->route('teacher.waiting');
+        return redirect()->intended('/admin');
     }
 
     public function render()
     {
-        return view('livewire.register-teacher', [
-            'schools' => School::where('type', 'sekolah')->get()
+        return view('livewire.register-mahasiswa', [
+            'schools' => School::where('type', 'program_studi')->get()
         ]);
     }
 } 

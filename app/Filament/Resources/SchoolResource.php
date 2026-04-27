@@ -32,9 +32,17 @@ class SchoolResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
-                    ->label('Nama Sekolah')
+                    ->label('Nama Sekolah/Program Studi')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\Select::make('type')
+                    ->label('Tipe')
+                    ->options([
+                        'sekolah' => 'Sekolah (SMA)',
+                        'program_studi' => 'Program Studi (Universitas)',
+                    ])
+                    ->default('sekolah')
+                    ->required(),
                 Forms\Components\Textarea::make('address')
                     ->label('Alamat')
                     ->maxLength(65535)
@@ -47,7 +55,21 @@ class SchoolResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Nama Sekolah')
+                    ->label('Nama')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('type')
+                    ->label('Tipe')
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'sekolah' => 'Sekolah',
+                        'program_studi' => 'Program Studi',
+                        default => $state,
+                    })
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'sekolah' => 'primary',
+                        'program_studi' => 'success',
+                        default => 'gray',
+                    })
                     ->searchable(),
                 Tables\Columns\TextColumn::make('address')
                     ->label('Alamat')

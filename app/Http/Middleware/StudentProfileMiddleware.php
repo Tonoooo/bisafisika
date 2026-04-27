@@ -22,8 +22,8 @@ class StudentProfileMiddleware
             return $next($request);
         }
 
-        // Jika user adalah siswa, batasi akses hanya ke profil mereka sendiri
-        if ($user->hasRole('siswa')) {
+        // Jika user adalah siswa atau mahasiswa, batasi akses hanya ke profil mereka sendiri
+        if ($user->hasRole(['siswa', 'mahasiswa'])) {
             $requestedUserId = $request->route('user');
             
             if ($requestedUserId && $requestedUserId != $user->id) {

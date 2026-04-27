@@ -22,8 +22,8 @@ class StudentQuizMiddleware
             return $next($request);
         }
 
-        // Jika user adalah siswa, batasi akses ke quiz yang tersedia untuk sekolah mereka
-        if ($user->hasRole('siswa')) {
+        // Jika user adalah siswa atau mahasiswa, batasi akses ke quiz yang tersedia
+        if ($user->hasRole(['siswa', 'mahasiswa'])) {
             $schoolId = $user->school_id;
             $level = $user->level;
             $class = $user->class;
