@@ -254,12 +254,8 @@
                 showWarning: false,
                 showStart: !isResuming,
                 quizEnded: false,
-                isProcessing: false,
                 proctorActive: isResuming,
                 userQuizId: userQuizId,
-                lastViolationTime: 0,
-                tabSwitchDetected: false, // Flag: tab switch baru terjadi
-                isDismissing: false,      // Flag: sedang dismiss warning (masuk fullscreen)
 
                 init() {
                     if (isResuming) {
@@ -298,39 +294,35 @@
                 startListeners() {
                     const self = this;
 
-                    // PRIMARY: Deteksi pindah tab (Page Visibility API)
+                    // SATU-SATUNYA trigger pelanggaran: Page Visibility API
+                    // Ini mendeteksi: pindah tab, Alt+Tab, minimize, klik aplikasi lain
                     document.addEventListener('visibilitychange', function() {
                         if (document.hidden && !self.quizEnded && self.proctorActive) {
-                            // Tandai bahwa ini tab switch agar fullscreenchange tidak double count
-                            self.tabSwitchDetected = true;
-                            self.handleViolation('tab_switch');
-                        }
-                        if (!document.hidden) {
-                            // User kembali, reset flag setelah 5 detik
-                            setTimeout(() => { self.tabSwitchDetected = false; }, 5000);
+                            self.violations++;
+                            self.showWarning = true;
+                            @this.call('recordViolation', 'tab_switch');
+
+                            if (self.violations >= 3) {
+                                self.showWarning = false;
+                                self.quizEnded = true;
+                                sessionStorage.removeItem(sessionKey);
+                                if (document.fullscreenElement) {
+                                    document.exitFullscreen().catch(() => {});
+                                }
+                            }
                         }
                     });
 
-                    // SECONDARY: Deteksi keluar fullscreen (hanya jika user tekan Escape, BUKAN dari tab switch)
+                    // Fullscreen exit: BUKAN pelanggaran, hanya auto re-enter
+                    // Jika user tekan Escape, otomatis masuk fullscreen lagi
                     document.addEventListener('fullscreenchange', function() {
-                        if (!document.fullscreenElement && !self.quizEnded && self.proctorActive) {
-                            // Abaikan jika disebabkan oleh tab switch (sudah dihitung)
-                            if (self.tabSwitchDetected) return;
-                            // Abaikan jika sedang dismiss warning (masuk ulang fullscreen)
-                            if (self.isDismissing) return;
-                            self.handleViolation('fullscreen_exit');
-                        }
-                    });
-
-                    // TERTIARY: Deteksi pindah aplikasi (window blur)
-                    window.addEventListener('blur', function() {
-                        if (!self.quizEnded && self.proctorActive) {
-                            // Abaikan jika baru saja ada tab switch
-                            if (self.tabSwitchDetected) return;
-                            // Abaikan jika baru ada pelanggaran
-                            const now = Date.now();
-                            if (now - self.lastViolationTime < 5000) return;
-                            self.handleViolation('window_blur');
+                        if (!document.fullscreenElement && !self.quizEnded && self.proctorActive && !self.showWarning) {
+                            // Coba masuk fullscreen lagi otomatis
+                            setTimeout(() => {
+                                if (!self.quizEnded && self.proctorActive && !self.showWarning) {
+                                    self.requestFullscreen();
+                                }
+                            }, 500);
                         }
                     });
                 },
@@ -344,43 +336,10 @@
                     }
                 },
 
-                handleViolation(type) {
-                    const now = Date.now();
-                    if (this.isProcessing || this.quizEnded || !this.proctorActive) return;
-                    if (this.isDismissing) return;
-                    if (now - this.lastViolationTime < 5000) return;
-
-                    this.isProcessing = true;
-                    this.lastViolationTime = now;
-
-                    this.violations++;
-                    this.showWarning = true;
-
-                    @this.call('recordViolation', type);
-
-                    if (this.violations >= 3) {
-                        this.showWarning = false;
-                        this.quizEnded = true;
-                        sessionStorage.removeItem(sessionKey);
-                        if (document.fullscreenElement) {
-                            document.exitFullscreen().catch(() => {});
-                        }
-                    }
-
-                    // Reset processing flag setelah 5 detik
-                    setTimeout(() => {
-                        this.isProcessing = false;
-                    }, 5000);
-                },
-
                 dismissWarning() {
                     this.showWarning = false;
-                    // Set flag agar fullscreenchange dari re-enter tidak dihitung
-                    this.isDismissing = true;
                     this.requestFullscreen();
                     this.typesetMath();
-                    // Reset flag setelah fullscreen settle
-                    setTimeout(() => { this.isDismissing = false; }, 3000);
                 }
             };
         }
