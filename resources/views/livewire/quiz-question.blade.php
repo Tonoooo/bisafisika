@@ -30,25 +30,25 @@
 
         {{-- Overlay peringatan kecurangan --}}
         <div x-show="showWarning" x-cloak
-             style="display:none;"
-             class="fixed inset-0 z-[9999] flex items-center justify-center">
-            <div class="absolute inset-0 bg-black/92"></div>
-            <div class="relative text-center p-8 max-w-lg mx-4">
-                <div class="mb-6">
-                    <svg class="w-24 h-24 mx-auto text-red-500 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+             style="display:none; position:fixed; inset:0; z-index:9999; display:flex; align-items:center; justify-content:center;">
+            <div style="position:absolute; inset:0; background:rgba(0,0,0,0.92);"></div>
+            <div style="position:relative; text-align:center; padding:2rem; max-width:32rem; margin:0 1rem;">
+                <div style="margin-bottom:1.5rem;">
+                    <svg style="width:6rem; height:6rem; margin:0 auto; color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
                     </svg>
                 </div>
-                <h2 class="text-3xl font-bold text-red-500 mb-3">⚠️ Kecurangan Terdeteksi!</h2>
-                <p class="text-white text-lg mb-2">Anda terdeteksi meninggalkan halaman ujian.</p>
-                <p class="text-gray-300 text-base mb-6">
-                    Pelanggaran ke-<span class="text-red-400 font-bold text-xl" x-text="violations"></span> dari 3.
+                <h2 style="font-size:1.875rem; font-weight:700; color:#ef4444; margin-bottom:0.75rem;">⚠️ Kecurangan Terdeteksi!</h2>
+                <p style="color:#ffffff; font-size:1.125rem; margin-bottom:0.5rem;">Anda terdeteksi meninggalkan halaman ujian.</p>
+                <p style="color:#d1d5db; font-size:1rem; margin-bottom:1.5rem;">
+                    Pelanggaran ke-<span style="color:#f87171; font-weight:700; font-size:1.25rem;" x-text="violations"></span> dari 3.
                     <br>
-                    <span class="text-red-400 font-semibold" x-show="violations >= 2">Peringatan terakhir! Pelanggaran berikutnya akan mengakhiri quiz Anda secara otomatis.</span>
+                    <span style="color:#f87171; font-weight:600;" x-show="violations >= 2">Peringatan terakhir! Pelanggaran berikutnya akan mengakhiri quiz Anda secara otomatis.</span>
                 </p>
                 <button @click="dismissWarning()"
-                        class="px-8 py-3 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition-colors text-lg shadow-lg cursor-pointer">
+                        style="padding:0.75rem 2rem; background-color:#dc2626; color:#ffffff; font-weight:700; border-radius:0.5rem; font-size:1.125rem; box-shadow:0 4px 14px rgba(220,38,38,0.4); cursor:pointer; border:none; transition:background-color 0.2s;"
+                        onmouseover="this.style.backgroundColor='#b91c1c'" onmouseout="this.style.backgroundColor='#dc2626'">
                     Kembali ke Quiz (Fullscreen)
                 </button>
             </div>
@@ -56,20 +56,20 @@
 
         {{-- Overlay quiz diakhiri --}}
         <div x-show="quizEnded" x-cloak
-             style="display:none;"
-             class="fixed inset-0 z-[9999] flex items-center justify-center">
-            <div class="absolute inset-0 bg-black/95"></div>
-            <div class="relative text-center p-8 max-w-lg mx-4">
-                <div class="mb-6">
-                    <svg class="w-24 h-24 mx-auto text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+             style="display:none; position:fixed; inset:0; z-index:9999; display:flex; align-items:center; justify-content:center;">
+            <div style="position:absolute; inset:0; background:rgba(0,0,0,0.95);"></div>
+            <div style="position:relative; text-align:center; padding:2rem; max-width:32rem; margin:0 1rem;">
+                <div style="margin-bottom:1.5rem;">
+                    <svg style="width:6rem; height:6rem; margin:0 auto; color:#dc2626;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
                     </svg>
                 </div>
-                <h2 class="text-3xl font-bold text-red-600 mb-3">Quiz Diakhiri!</h2>
-                <p class="text-white text-lg mb-6">Quiz Anda telah diakhiri secara otomatis karena <strong class="text-red-400">3 pelanggaran</strong>.</p>
+                <h2 style="font-size:1.875rem; font-weight:700; color:#dc2626; margin-bottom:0.75rem;">Quiz Diakhiri!</h2>
+                <p style="color:#ffffff; font-size:1.125rem; margin-bottom:1.5rem;">Quiz Anda telah diakhiri secara otomatis karena <strong style="color:#f87171;">3 pelanggaran</strong>.</p>
                 <a href="{{ route('quiz.results', $userQuizId) }}"
-                   class="inline-block px-8 py-3 bg-gray-700 text-white font-bold rounded-lg hover:bg-gray-600 transition-colors text-lg cursor-pointer">
+                   style="display:inline-block; padding:0.75rem 2rem; background-color:#374151; color:#ffffff; font-weight:700; border-radius:0.5rem; font-size:1.125rem; text-decoration:none; cursor:pointer;"
+                   onmouseover="this.style.backgroundColor='#4b5563'" onmouseout="this.style.backgroundColor='#374151'">
                     Lihat Hasil Quiz
                 </a>
             </div>
