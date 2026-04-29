@@ -256,6 +256,7 @@
                 quizEnded: false,
                 proctorActive: isResuming,
                 userQuizId: userQuizId,
+                isDismissing: false, // Saat user klik "Kembali" dan fullscreen sedang masuk ulang
 
                 init() {
                     if (isResuming) {
@@ -294,37 +295,52 @@
                 startListeners() {
                     const self = this;
 
-                    // SATU-SATUNYA trigger pelanggaran: Page Visibility API
-                    // Ini mendeteksi: pindah tab, Alt+Tab, minimize, klik aplikasi lain
+                    // ===== GUARD: showWarning =====
+                    // Selama warning MASIH TAMPIL, semua event DIABAIKAN.
+                    // Warning baru hilang setelah user klik "Kembali ke Quiz".
+                    // Ini otomatis mencegah double counting karena 1 aksi curang
+                    // mungkin memicu 2-3 event sekaligus, tapi hanya event PERTAMA
+                    // yang dihitung.
+
+                    // 1. Deteksi pindah tab
                     document.addEventListener('visibilitychange', function() {
                         if (document.hidden && !self.quizEnded && self.proctorActive) {
-                            self.violations++;
-                            self.showWarning = true;
-                            @this.call('recordViolation', 'tab_switch');
-
-                            if (self.violations >= 3) {
-                                self.showWarning = false;
-                                self.quizEnded = true;
-                                sessionStorage.removeItem(sessionKey);
-                                if (document.fullscreenElement) {
-                                    document.exitFullscreen().catch(() => {});
-                                }
-                            }
+                            if (self.showWarning || self.isDismissing) return;
+                            self.recordAndWarn('tab_switch');
                         }
                     });
 
-                    // Fullscreen exit: BUKAN pelanggaran, hanya auto re-enter
-                    // Jika user tekan Escape, otomatis masuk fullscreen lagi
+                    // 2. Deteksi keluar fullscreen (tekan Escape, split screen, dll)
                     document.addEventListener('fullscreenchange', function() {
-                        if (!document.fullscreenElement && !self.quizEnded && self.proctorActive && !self.showWarning) {
-                            // Coba masuk fullscreen lagi otomatis
-                            setTimeout(() => {
-                                if (!self.quizEnded && self.proctorActive && !self.showWarning) {
-                                    self.requestFullscreen();
-                                }
-                            }, 500);
+                        if (!document.fullscreenElement && !self.quizEnded && self.proctorActive) {
+                            if (self.showWarning || self.isDismissing) return;
+                            self.recordAndWarn('fullscreen_exit');
                         }
                     });
+
+                    // 3. Deteksi pindah aplikasi (window blur, pop-up, dll)
+                    window.addEventListener('blur', function() {
+                        if (!self.quizEnded && self.proctorActive) {
+                            if (self.showWarning || self.isDismissing) return;
+                            self.recordAndWarn('window_blur');
+                        }
+                    });
+                },
+
+                recordAndWarn(type) {
+                    this.violations++;
+                    this.showWarning = true; // GUARD aktif: event berikutnya akan di-skip
+
+                    @this.call('recordViolation', type);
+
+                    if (this.violations >= 3) {
+                        this.showWarning = false;
+                        this.quizEnded = true;
+                        sessionStorage.removeItem(sessionKey);
+                        if (document.fullscreenElement) {
+                            document.exitFullscreen().catch(() => {});
+                        }
+                    }
                 },
 
                 requestFullscreen() {
@@ -338,8 +354,12 @@
 
                 dismissWarning() {
                     this.showWarning = false;
+                    // Set isDismissing agar fullscreenchange dari re-enter tidak dihitung
+                    this.isDismissing = true;
                     this.requestFullscreen();
                     this.typesetMath();
+                    // Beri waktu fullscreen untuk settle sebelum reset flag
+                    setTimeout(() => { this.isDismissing = false; }, 3000);
                 }
             };
         }
