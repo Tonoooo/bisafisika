@@ -7,71 +7,74 @@
          id="proctor-layer">
 
         {{-- Overlay start: user harus klik untuk masuk fullscreen --}}
-        <div x-show="showStart" x-cloak
-             style="display:none;"
-             class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90">
-            <div class="text-center p-8 max-w-md mx-4">
-                <div class="mb-4">
-                    <svg class="w-16 h-16 mx-auto text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
+        <div x-show="showStart" x-cloak>
+            <div style="position:fixed; top:0; left:0; right:0; bottom:0; z-index:9999; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.90);">
+                <div style="text-align:center; padding:2rem; max-width:28rem; margin:0 1rem;">
+                    <div style="margin-bottom:1rem;">
+                        <svg style="width:4rem; height:4rem; margin:0 auto; color:#4ade80;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <h2 style="font-size:1.5rem; font-weight:700; color:#ffffff; margin-bottom:0.5rem;">Quiz Siap Dimulai</h2>
+                    <p style="color:#d1d5db; margin-bottom:1.5rem;">Klik tombol di bawah untuk masuk mode fullscreen dan memulai quiz.</p>
+                    <button @click="enterFullscreenAndStart()"
+                            style="padding:1rem 2rem; background-color:#16a34a; color:#ffffff; font-weight:700; border-radius:0.75rem; font-size:1.125rem; box-shadow:0 4px 14px rgba(22,163,74,0.4); cursor:pointer; border:none; transition:background-color 0.2s;"
+                            onmouseover="this.style.backgroundColor='#15803d'" onmouseout="this.style.backgroundColor='#16a34a'">
+                        🖥️ Masuk Fullscreen & Mulai
+                    </button>
                 </div>
-                <h2 class="text-2xl font-bold text-white mb-2">Quiz Siap Dimulai</h2>
-                <p class="text-gray-300 mb-6">Klik tombol di bawah untuk masuk mode fullscreen dan memulai quiz.</p>
-                <button @click="enterFullscreenAndStart()"
-                        class="px-8 py-4 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition-colors text-lg shadow-lg cursor-pointer">
-                    🖥️ Masuk Fullscreen & Mulai
-                </button>
             </div>
         </div>
 
         {{-- Overlay peringatan kecurangan --}}
-        <div x-show="showWarning" x-cloak
-             style="display:none; position:fixed; inset:0; z-index:9999; display:flex; align-items:center; justify-content:center;">
-            <div style="position:absolute; inset:0; background:rgba(0,0,0,0.92);"></div>
-            <div style="position:relative; text-align:center; padding:2rem; max-width:32rem; margin:0 1rem;">
-                <div style="margin-bottom:1.5rem;">
-                    <svg style="width:6rem; height:6rem; margin:0 auto; color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
-                    </svg>
+        <div x-show="showWarning" x-cloak>
+            <div style="position:fixed; top:0; left:0; right:0; bottom:0; z-index:9999; display:flex; align-items:center; justify-content:center;">
+                <div style="position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.92);"></div>
+                <div style="position:relative; text-align:center; padding:2rem; max-width:32rem; margin:0 1rem;">
+                    <div style="margin-bottom:1.5rem;">
+                        <svg style="width:6rem; height:6rem; margin:0 auto; color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                        </svg>
+                    </div>
+                    <h2 style="font-size:1.875rem; font-weight:700; color:#ef4444; margin-bottom:0.75rem;">⚠️ Kecurangan Terdeteksi!</h2>
+                    <p style="color:#ffffff; font-size:1.125rem; margin-bottom:0.5rem;">Anda terdeteksi meninggalkan halaman ujian.</p>
+                    <p style="color:#d1d5db; font-size:1rem; margin-bottom:1.5rem;">
+                        Pelanggaran ke-<span style="color:#f87171; font-weight:700; font-size:1.25rem;" x-text="violations"></span> dari 3.
+                        <br>
+                        <span style="color:#f87171; font-weight:600;" x-show="violations >= 2">Peringatan terakhir! Pelanggaran berikutnya akan mengakhiri quiz Anda secara otomatis.</span>
+                    </p>
+                    <button @click="dismissWarning()"
+                            style="padding:0.75rem 2rem; background-color:#dc2626; color:#ffffff; font-weight:700; border-radius:0.5rem; font-size:1.125rem; box-shadow:0 4px 14px rgba(220,38,38,0.4); cursor:pointer; border:none; transition:background-color 0.2s;"
+                            onmouseover="this.style.backgroundColor='#b91c1c'" onmouseout="this.style.backgroundColor='#dc2626'">
+                        Kembali ke Quiz (Fullscreen)
+                    </button>
                 </div>
-                <h2 style="font-size:1.875rem; font-weight:700; color:#ef4444; margin-bottom:0.75rem;">⚠️ Kecurangan Terdeteksi!</h2>
-                <p style="color:#ffffff; font-size:1.125rem; margin-bottom:0.5rem;">Anda terdeteksi meninggalkan halaman ujian.</p>
-                <p style="color:#d1d5db; font-size:1rem; margin-bottom:1.5rem;">
-                    Pelanggaran ke-<span style="color:#f87171; font-weight:700; font-size:1.25rem;" x-text="violations"></span> dari 3.
-                    <br>
-                    <span style="color:#f87171; font-weight:600;" x-show="violations >= 2">Peringatan terakhir! Pelanggaran berikutnya akan mengakhiri quiz Anda secara otomatis.</span>
-                </p>
-                <button @click="dismissWarning()"
-                        style="padding:0.75rem 2rem; background-color:#dc2626; color:#ffffff; font-weight:700; border-radius:0.5rem; font-size:1.125rem; box-shadow:0 4px 14px rgba(220,38,38,0.4); cursor:pointer; border:none; transition:background-color 0.2s;"
-                        onmouseover="this.style.backgroundColor='#b91c1c'" onmouseout="this.style.backgroundColor='#dc2626'">
-                    Kembali ke Quiz (Fullscreen)
-                </button>
             </div>
         </div>
 
         {{-- Overlay quiz diakhiri --}}
-        <div x-show="quizEnded" x-cloak
-             style="display:none; position:fixed; inset:0; z-index:9999; display:flex; align-items:center; justify-content:center;">
-            <div style="position:absolute; inset:0; background:rgba(0,0,0,0.95);"></div>
-            <div style="position:relative; text-align:center; padding:2rem; max-width:32rem; margin:0 1rem;">
-                <div style="margin-bottom:1.5rem;">
-                    <svg style="width:6rem; height:6rem; margin:0 auto; color:#dc2626;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
-                    </svg>
+        <div x-show="quizEnded" x-cloak>
+            <div style="position:fixed; top:0; left:0; right:0; bottom:0; z-index:9999; display:flex; align-items:center; justify-content:center;">
+                <div style="position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.95);"></div>
+                <div style="position:relative; text-align:center; padding:2rem; max-width:32rem; margin:0 1rem;">
+                    <div style="margin-bottom:1.5rem;">
+                        <svg style="width:6rem; height:6rem; margin:0 auto; color:#dc2626;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+                        </svg>
+                    </div>
+                    <h2 style="font-size:1.875rem; font-weight:700; color:#dc2626; margin-bottom:0.75rem;">Quiz Diakhiri!</h2>
+                    <p style="color:#ffffff; font-size:1.125rem; margin-bottom:1.5rem;">Quiz Anda telah diakhiri secara otomatis karena <strong style="color:#f87171;">3 pelanggaran</strong>.</p>
+                    <a href="{{ route('quiz.results', $userQuizId) }}"
+                       style="display:inline-block; padding:0.75rem 2rem; background-color:#374151; color:#ffffff; font-weight:700; border-radius:0.5rem; font-size:1.125rem; text-decoration:none; cursor:pointer;"
+                       onmouseover="this.style.backgroundColor='#4b5563'" onmouseout="this.style.backgroundColor='#374151'">
+                        Lihat Hasil Quiz
+                    </a>
                 </div>
-                <h2 style="font-size:1.875rem; font-weight:700; color:#dc2626; margin-bottom:0.75rem;">Quiz Diakhiri!</h2>
-                <p style="color:#ffffff; font-size:1.125rem; margin-bottom:1.5rem;">Quiz Anda telah diakhiri secara otomatis karena <strong style="color:#f87171;">3 pelanggaran</strong>.</p>
-                <a href="{{ route('quiz.results', $userQuizId) }}"
-                   style="display:inline-block; padding:0.75rem 2rem; background-color:#374151; color:#ffffff; font-weight:700; border-radius:0.5rem; font-size:1.125rem; text-decoration:none; cursor:pointer;"
-                   onmouseover="this.style.backgroundColor='#4b5563'" onmouseout="this.style.backgroundColor='#374151'">
-                    Lihat Hasil Quiz
-                </a>
             </div>
         </div>
 
@@ -254,7 +257,9 @@
                 isProcessing: false,
                 proctorActive: isResuming,
                 userQuizId: userQuizId,
-                lastViolationTime: 0, // Timestamp pelanggaran terakhir
+                lastViolationTime: 0,
+                tabSwitchDetected: false, // Flag: tab switch baru terjadi
+                isDismissing: false,      // Flag: sedang dismiss warning (masuk fullscreen)
 
                 init() {
                     if (isResuming) {
@@ -293,29 +298,38 @@
                 startListeners() {
                     const self = this;
 
-                    // Deteksi pindah tab (Page Visibility API)
+                    // PRIMARY: Deteksi pindah tab (Page Visibility API)
                     document.addEventListener('visibilitychange', function() {
                         if (document.hidden && !self.quizEnded && self.proctorActive) {
+                            // Tandai bahwa ini tab switch agar fullscreenchange tidak double count
+                            self.tabSwitchDetected = true;
                             self.handleViolation('tab_switch');
+                        }
+                        if (!document.hidden) {
+                            // User kembali, reset flag setelah 5 detik
+                            setTimeout(() => { self.tabSwitchDetected = false; }, 5000);
                         }
                     });
 
-                    // Deteksi keluar fullscreen
+                    // SECONDARY: Deteksi keluar fullscreen (hanya jika user tekan Escape, BUKAN dari tab switch)
                     document.addEventListener('fullscreenchange', function() {
                         if (!document.fullscreenElement && !self.quizEnded && self.proctorActive) {
+                            // Abaikan jika disebabkan oleh tab switch (sudah dihitung)
+                            if (self.tabSwitchDetected) return;
+                            // Abaikan jika sedang dismiss warning (masuk ulang fullscreen)
+                            if (self.isDismissing) return;
                             self.handleViolation('fullscreen_exit');
                         }
                     });
 
-                    // Deteksi pindah aplikasi (window blur)
-                    // Hanya catat jika BUKAN disebabkan oleh fullscreen exit (yang sudah dicatat)
+                    // TERTIARY: Deteksi pindah aplikasi (window blur)
                     window.addEventListener('blur', function() {
                         if (!self.quizEnded && self.proctorActive) {
-                            // Jika baru saja ada pelanggaran dalam 3 detik terakhir, abaikan blur
+                            // Abaikan jika baru saja ada tab switch
+                            if (self.tabSwitchDetected) return;
+                            // Abaikan jika baru ada pelanggaran
                             const now = Date.now();
-                            if (now - self.lastViolationTime < 3000) {
-                                return;
-                            }
+                            if (now - self.lastViolationTime < 5000) return;
                             self.handleViolation('window_blur');
                         }
                     });
@@ -331,10 +345,10 @@
                 },
 
                 handleViolation(type) {
-                    // Cegah duplikat: abaikan jika sedang proses atau baru terjadi < 3 detik
                     const now = Date.now();
                     if (this.isProcessing || this.quizEnded || !this.proctorActive) return;
-                    if (now - this.lastViolationTime < 3000) return;
+                    if (this.isDismissing) return;
+                    if (now - this.lastViolationTime < 5000) return;
 
                     this.isProcessing = true;
                     this.lastViolationTime = now;
@@ -353,16 +367,20 @@
                         }
                     }
 
-                    // Reset processing flag setelah 3 detik (sama dengan cooldown)
+                    // Reset processing flag setelah 5 detik
                     setTimeout(() => {
                         this.isProcessing = false;
-                    }, 3000);
+                    }, 5000);
                 },
 
                 dismissWarning() {
                     this.showWarning = false;
+                    // Set flag agar fullscreenchange dari re-enter tidak dihitung
+                    this.isDismissing = true;
                     this.requestFullscreen();
                     this.typesetMath();
+                    // Reset flag setelah fullscreen settle
+                    setTimeout(() => { this.isDismissing = false; }, 3000);
                 }
             };
         }
