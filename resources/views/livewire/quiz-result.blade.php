@@ -32,10 +32,11 @@
         @endforeach
     </div>
     <script>
-        document.addEventListener('livewire:load', function () {
-            window.Livewire.hook('element.updated', (el, component) => {
-                MathJax.typesetPromise();
-            });
+        // Bersihkan session quiz yang sudah selesai
+        Object.keys(sessionStorage).forEach(key => {
+            if (key.startsWith('quiz_active_')) {
+                sessionStorage.removeItem(key);
+            }
         });
     </script>
 </div>

@@ -53,7 +53,7 @@ class TakeQuiz extends Page
             return;
         }
         
-        return redirect()->route('quiz.start', $quizId);
+        return redirect()->route('quiz.prepare', $quizId);
     }
 
     protected function getViewData(): array

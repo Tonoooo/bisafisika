@@ -15,7 +15,8 @@ class UserQuiz extends Model
         'quiz_id', 
         'started_at',
         'is_completed',
-        'score'
+        'score',
+        'total_violations',
     ];
 
     protected $casts = [
@@ -43,5 +44,10 @@ class UserQuiz extends Model
     {
         return $this->hasOne(Leaderboard::class, 'quiz_id', 'quiz_id')
             ->where('user_id', $this->user_id);
+    }
+
+    public function violations()
+    {
+        return $this->hasMany(QuizViolation::class);
     }
 }

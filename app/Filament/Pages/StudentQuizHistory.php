@@ -42,7 +42,7 @@ class StudentQuizHistory extends Page implements HasTable
     {
         $user = auth()->user();
         $isAdmin = $user->roles->contains('name', 'super_admin');
-        $isTeacher = $user->roles->contains('name', 'guru');
+        $isTeacher = $user->roles->contains('name', 'guru') || $user->roles->contains('name', 'dosen');
 
         return $table
             ->query(
@@ -67,6 +67,15 @@ class StudentQuizHistory extends Page implements HasTable
                 TextColumn::make('score')
                     ->label('Nilai')
                     ->numeric(decimalPlaces: 2)
+                    ->sortable(),
+                TextColumn::make('total_violations')
+                    ->label('Pelanggaran')
+                    ->badge()
+                    ->color(fn (int $state): string => match(true) {
+                        $state === 0 => 'success',
+                        $state < 3 => 'warning',
+                        default => 'danger',
+                    })
                     ->sortable(),
             ])
             ->actions([

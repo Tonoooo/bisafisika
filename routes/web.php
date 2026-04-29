@@ -15,6 +15,7 @@ Route::get('/teacher/waiting', function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/quizzes', QuizList::class)->name('quiz.list');
+    Route::get('/quiz/{quizId}/prepare', \App\Livewire\QuizPreparation::class)->name('quiz.prepare');
     Route::get('/quiz/{quizId}/start', [QuizController::class, 'startQuiz'])->name('quiz.start');
     Route::get('/quiz/{userQuizId}/question/{questionIndex}', \App\Livewire\QuizQuestion::class)->name('quiz.question');
     Route::get('/quiz/results/{userQuizId}', \App\Livewire\QuizResult::class)->name('quiz.results');

@@ -132,7 +132,7 @@ class LeaderboardResource extends Resource
                             })
                         );
                     })
-                    ->visible(fn () => auth()->user()->roles->contains('name', 'super_admin') || auth()->user()->roles->contains('name', 'guru')),
+                    ->visible(fn () => auth()->user()->roles->contains('name', 'super_admin') || auth()->user()->roles->contains('name', 'guru') || auth()->user()->roles->contains('name', 'dosen')),
 
                 Tables\Filters\SelectFilter::make('class')
                     ->label('Kelas')
@@ -150,7 +150,7 @@ class LeaderboardResource extends Resource
                             })
                         );
                     })
-                    ->visible(fn () => auth()->user()->roles->contains('name', 'super_admin') || auth()->user()->roles->contains('name', 'guru')),
+                    ->visible(fn () => auth()->user()->roles->contains('name', 'super_admin') || auth()->user()->roles->contains('name', 'guru') || auth()->user()->roles->contains('name', 'dosen')),
             ])
             ->defaultSort('total_score', 'desc')
             ->recordUrl(fn (StudentScore $record): string => route('filament.admin.pages.student-quiz-history', ['userId' => $record->user_id]));
@@ -163,15 +163,15 @@ class LeaderboardResource extends Resource
 
         $query->whereHas('user', function ($query) {
             $query->whereHas('roles', function ($query) {
-                $query->where('name', 'siswa');
+                $query->whereIn('name', ['siswa', 'mahasiswa']);
             });
         });
 
-        if ($user->roles->contains('name', 'guru')) {
+        if ($user->roles->contains('name', 'guru') || $user->roles->contains('name', 'dosen')) {
             $query->whereHas('user', function ($query) use ($user) {
                 $query->where('school_id', $user->school_id);
             });
-        } elseif ($user->roles->contains('name', 'siswa')) {
+        } elseif ($user->roles->contains('name', 'siswa') || $user->roles->contains('name', 'mahasiswa')) {
             $query->where(function($q) use ($user) {
                 $q->where('user_id', $user->id)
                   ->orWhere(function($q) use ($user) {

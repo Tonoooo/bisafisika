@@ -12,7 +12,7 @@
         <ul class="divide-y divide-gray-200">
             @foreach ($quizzes as $quiz)
                 <li class="py-4">
-                    <a href="{{ route('quiz.start', $quiz->id) }}" class="text-lg font-medium text-blue-600 hover:underline">
+                    <a href="{{ route('quiz.prepare', $quiz->id) }}" class="text-lg font-medium text-blue-600 hover:underline">
                         {{ $quiz->title }}
                     </a>
                 </li>
