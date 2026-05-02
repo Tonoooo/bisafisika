@@ -6,7 +6,9 @@ namespace App\Filament\Resources;
 
 use App\Exports\LeaderboardExport;
 use App\Filament\Resources\LeaderboardResource\Pages;
-use App\Models\Leaderboard;
+use App\Models\Bab;
+use App\Models\Quiz;
+use App\Models\UserQuiz;
 use App\Models\StudentScore;
 use App\Models\School;
 use App\Models\User;
@@ -23,10 +25,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class LeaderboardResource extends Resource
 {
-    protected static ?string $model = StudentScore::class;
+    protected static ?string $model = Bab::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
-    protected static ?string $navigationLabel = 'Total Leaderboard';
+    protected static ?string $navigationLabel = 'Leaderboard';
 
     public static function form(Form $form): Form
     {
@@ -41,7 +43,7 @@ class LeaderboardResource extends Resource
         return false;
     }
 
-     public static function canEdit(Model $record): bool
+    public static function canEdit(Model $record): bool
     {
         return false; 
     }
@@ -51,142 +53,33 @@ class LeaderboardResource extends Resource
         return false; 
     }
 
-    // public static function canForceDelete(Model $record): bool
-    // {
-    //     return false;
-    // }
-
-    // public static function canRestore(Model $record): bool
-    // {
-    //     return false;
-    // }
-
-    // public static function canReplicate(Model $record): bool
-    // {
-    //     return false;
-    // }
-
-
     public static function table(Table $table): Table
     {
         return $table
-            ->headerActions([
-                Tables\Actions\Action::make('export')
-                    ->label('Export Excel')
-                    ->icon('heroicon-o-arrow-down-tray')
-                    ->action(function ($livewire) {
-                        $query = $livewire->getFilteredTableQuery();
-                        return Excel::download(new LeaderboardExport($query), 'leaderboard-' . now()->format('Y-m-d') . '.xlsx');
-                    })
-            ])
             ->columns([
-                Tables\Columns\TextColumn::make('user.name')
-                    ->label('Nama Siswa')
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Nama Bab')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('user.school.name')
-                    ->label('Sekolah')
-                    ->formatStateUsing(fn ($state) => $state ?? 'Lainnya')
-                    ->searchable()
+                Tables\Columns\TextColumn::make('quizzes_count')
+                    ->label('Jumlah Level/Quiz')
+                    ->counts('quizzes')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('user.level')
-                    ->label('Tingkat')
-                    ->formatStateUsing(fn ($state) => $state ?? 'Lainnya')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('user.class')
-                    ->label('Kelas')
-                    ->formatStateUsing(fn ($state) => $state ?? 'Lainnya')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('total_score')
-                    ->label('Total Nilai')
-                    ->sortable()
-                    ->numeric(decimalPlaces: 2),
-                Tables\Columns\TextColumn::make('total_quizzes')
-                    ->label('Total Quiz')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('average_score')
-                    ->label('Rata-rata Nilai')
-                    ->sortable()
-                    ->numeric(decimalPlaces: 2),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('school')
-                    ->label('Sekolah')
-                    ->relationship('user.school', 'name')
-                    ->searchable()
-                    ->preload()
-                    ->visible(fn () => auth()->user()->roles->contains('name', 'super_admin')),
-
-                Tables\Filters\SelectFilter::make('level')
-                    ->label('Tingkat')
-                    ->options([
-                        '1' => '1',
-                        '2' => '2',
-                        '3' => '3',
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query->when(
-                            $data['value'],
-                            fn (Builder $query, $value): Builder => $query->whereHas('user', function ($query) use ($value) {
-                                $query->where('level', $value);
-                            })
-                        );
-                    })
-                    ->visible(fn () => auth()->user()->roles->contains('name', 'super_admin') || auth()->user()->roles->contains('name', 'guru') || auth()->user()->roles->contains('name', 'dosen')),
-
-                Tables\Filters\SelectFilter::make('class')
-                    ->label('Kelas')
-                    ->options([
-                        'A' => 'A', 'B' => 'B', 'C' => 'C', 'D' => 'D', 'E' => 'E', 'F' => 'F', 'G' => 'G', 'H' => 'H',
-                        'I' => 'I', 'J' => 'J', 'K' => 'K', 'L' => 'L', 'M' => 'M', 'N' => 'N', 'O' => 'O', 'P' => 'P',
-                        'Q' => 'Q', 'R' => 'R', 'S' => 'S', 'T' => 'T', 'U' => 'U', 'V' => 'V', 'W' => 'W', 'X' => 'X',
-                        'Y' => 'Y', 'Z' => 'Z',
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query->when(
-                            $data['value'],
-                            fn (Builder $query, $value): Builder => $query->whereHas('user', function ($query) use ($value) {
-                                $query->where('class', $value);
-                            })
-                        );
-                    })
-                    ->visible(fn () => auth()->user()->roles->contains('name', 'super_admin') || auth()->user()->roles->contains('name', 'guru') || auth()->user()->roles->contains('name', 'dosen')),
+                //
             ])
-            ->defaultSort('total_score', 'desc')
-            ->recordUrl(fn (StudentScore $record): string => route('filament.admin.pages.student-quiz-history', ['userId' => $record->user_id]));
+            ->actions([
+                Tables\Actions\Action::make('view_quizzes')
+                    ->label('Lihat Level')
+                    ->icon('heroicon-o-list-bullet')
+                    ->color('primary')
+                    ->url(fn (Bab $record): string => static::getUrl('quizzes', ['babId' => $record])),
+            ])
+            ->bulkActions([
+                //
+            ]);
     }
-
-    public static function getEloquentQuery(): Builder
-    {
-        $query = parent::getEloquentQuery();
-        $user = auth()->user();
-
-        $query->whereHas('user', function ($query) {
-            $query->whereHas('roles', function ($query) {
-                $query->whereIn('name', ['siswa', 'mahasiswa']);
-            });
-        });
-
-        if ($user->roles->contains('name', 'guru') || $user->roles->contains('name', 'dosen')) {
-            $query->whereHas('user', function ($query) use ($user) {
-                $query->where('school_id', $user->school_id);
-            });
-        } elseif ($user->roles->contains('name', 'siswa') || $user->roles->contains('name', 'mahasiswa')) {
-            $query->where(function($q) use ($user) {
-                $q->where('user_id', $user->id)
-                  ->orWhere(function($q) use ($user) {
-                      $q->whereHas('user', function($q) use ($user) {
-                          $q->where('school_id', $user->school_id)
-                            ->where('level', $user->level)
-                            ->where('class', $user->class);
-                      });
-                  });
-            });
-        }
-
-        return $query;
-    }
-
 
     public static function getRelations(): array
     {
@@ -199,6 +92,8 @@ class LeaderboardResource extends Resource
     {
         return [
             'index' => Pages\ListLeaderboards::route('/'),
+            'quizzes' => Pages\ViewBabQuizzes::route('/{babId}/quizzes'),
+            'scores' => Pages\ViewQuizLeaderboard::route('/{babId}/quizzes/{quizId}/scores'),
         ];
     }
 }

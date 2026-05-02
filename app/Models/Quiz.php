@@ -21,4 +21,9 @@ class Quiz extends Model
     {
         return $this->belongsTo(Bab::class);
     }
+
+    public function userQuizzes()
+    {
+        return $this->hasMany(UserQuiz::class);
+    }
 }
