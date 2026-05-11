@@ -13,6 +13,7 @@ class QuizList extends Component
     {
         $this->quizzes = Quiz::where('start_date', '<=', now())
             ->where('close_date', '>=', now())
+            ->whereNotNull('close_date')
             ->get();
     }
 

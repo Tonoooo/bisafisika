@@ -12,6 +12,11 @@ class Quiz extends Model
 
     protected $fillable = ['title', 'start_date', 'close_date', 'time_limit', 'attempt_limit', 'bab_id'];
 
+    protected $casts = [
+        'start_date' => 'datetime',
+        'close_date' => 'datetime',
+    ];
+
     public function questions()
     {
         return $this->belongsToMany(Question::class, 'quiz_question');
