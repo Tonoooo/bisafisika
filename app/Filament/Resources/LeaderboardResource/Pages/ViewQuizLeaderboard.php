@@ -16,6 +16,9 @@ use App\Exports\QuizLeaderboardExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Filament\Actions\Action;
 
+use Filament\Tables\Filters\Filter;
+use Filament\Forms\Components\TextInput;
+
 class ViewQuizLeaderboard extends Page implements HasTable
 {
     use InteractsWithTable;
@@ -96,6 +99,22 @@ class ViewQuizLeaderboard extends Page implements HasTable
                     ->label('Selesai Pada')
                     ->dateTime()
                     ->sortable(),
+            ])
+            ->filters([
+                Filter::make('class')
+                    ->label('Kelas')
+                    ->form([
+                        TextInput::make('class')
+                            ->label('Ketik Kelas')
+                            ->placeholder('cth: a, b, c'),
+                    ])
+                    ->query(function (Builder $query, array $data) {
+                        if (!empty($data['class'])) {
+                            $query->whereHas('user', function ($q) use ($data) {
+                                $q->where('class', 'like', '%' . $data['class'] . '%');
+                            });
+                        }
+                    }),
             ])
             ->defaultSort('score', 'desc');
     }

@@ -80,7 +80,7 @@
             <button wire:click="cancelQuiz" style="display:inline-flex;align-items:center;padding:0.4rem 1rem;font-size:0.85rem;font-weight:600;color:#92400e;background:rgba(255,255,255,0.85);border-radius:9999px;border:none;cursor:pointer;">
                 ✕ Cancel
             </button>
-            <div><img src="{{ asset('images/banner_logo.png') }}" alt="Logo" style="height:2.5rem;"></div>
+            <div class="quiz-logo-desktop"><img src="{{ asset('images/banner_logo.png') }}" alt="Logo" style="height:2.5rem;"></div>
             <div style="display:flex;align-items:center;padding:0.4rem 1rem;background:rgba(0,0,0,0.2);border-radius:9999px;color:#fff;font-weight:700;font-size:0.9rem;"
                  x-data="{ timeLeft: {{ $timeLeft }} }"
                  x-init="let t=setInterval(()=>{if(timeLeft>0){timeLeft--;if(timeLeft<=300)$el.style.background='rgba(220,38,38,0.7)';}else{clearInterval(t);window.location.href='{{ route('quiz.results', $userQuizId) }}';}},1000);"
@@ -326,6 +326,7 @@
         @media (max-width: 768px) {
             .quiz-nav-desktop { display: none !important; }
             .quiz-nav-mobile { display: block !important; }
+            .quiz-logo-desktop { display: none !important; }
         }
     </style>
 </div>
