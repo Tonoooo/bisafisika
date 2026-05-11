@@ -12,13 +12,16 @@ use Illuminate\Support\Facades\Log;
 class QuizQuestion extends Component
 {
     public $userQuizId;
-    public $questionIndex;
+    public $questionIndex = 0;
     public $totalQuestions;
-    public $answer;
+    public $selectedAnswerIndex = null; // Index jawaban (0,1,2,3) bukan teks
     public $timeLeft;
 
     // Simpan ID saja, bukan model Eloquent
     public $questionIds = [];
+
+    // Tracking jawaban: array of questionIndex => answerIndex
+    public $answeredQuestions = [];
 
     public function mount($userQuizId, $questionIndex = 0)
     {
@@ -49,8 +52,36 @@ class QuizQuestion extends Component
             return;
         }
 
-        // Muat jawaban yang sudah ada untuk soal pertama
+        // Muat status jawaban untuk semua soal (untuk grid navigasi)
+        $this->loadAllAnsweredStatus();
+
+        // Muat jawaban soal yang sedang aktif
         $this->loadCurrentAnswer();
+    }
+
+    /**
+     * Muat status jawaban semua soal (sudah dijawab atau belum).
+     */
+    private function loadAllAnsweredStatus()
+    {
+        $this->answeredQuestions = [];
+
+        foreach ($this->questionIds as $index => $questionId) {
+            $existingAnswer = UserAnswer::where('user_question_id', $questionId)->first();
+            if ($existingAnswer && $existingAnswer->answer_content !== null) {
+                // Cari index jawaban yang cocok
+                $question = UserQuestion::with('question')->find($questionId);
+                $answers = json_decode($question->answers, true);
+                if (is_array($answers)) {
+                    foreach ($answers as $ansIdx => $answer) {
+                        if (trim($answer['content'] ?? '') === trim($existingAnswer->answer_content)) {
+                            $this->answeredQuestions[$index] = $ansIdx;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -58,9 +89,11 @@ class QuizQuestion extends Component
      */
     private function loadCurrentAnswer()
     {
-        $questionId = $this->questionIds[$this->questionIndex];
-        $existingAnswer = UserAnswer::where('user_question_id', $questionId)->first();
-        $this->answer = $existingAnswer ? $existingAnswer->answer_content : null;
+        if (isset($this->answeredQuestions[$this->questionIndex])) {
+            $this->selectedAnswerIndex = $this->answeredQuestions[$this->questionIndex];
+        } else {
+            $this->selectedAnswerIndex = null;
+        }
     }
 
     /**
@@ -69,6 +102,21 @@ class QuizQuestion extends Component
     private function getCurrentQuestion()
     {
         return UserQuestion::with('question')->find($this->questionIds[$this->questionIndex]);
+    }
+
+    /**
+     * Ambil daftar jawaban dari soal saat ini (tanpa modifikasi apapun).
+     */
+    private function getAnswersForQuestion($questionId)
+    {
+        $question = UserQuestion::find($questionId);
+        $answers = json_decode($question->answers, true);
+        if (!is_array($answers)) return [];
+
+        // Filter jawaban kosong saja, TANPA modifikasi teks apapun
+        return array_values(array_filter($answers, function ($answer) {
+            return !empty(trim($answer['content'] ?? ''));
+        }));
     }
 
     public function getTimeLeft()
@@ -89,7 +137,7 @@ class QuizQuestion extends Component
     public function handleTimeUp()
     {
         $userQuiz = UserQuiz::findOrFail($this->userQuizId);
-        
+
         foreach ($userQuiz->userQuestions as $userQuestion) {
             if (!$userQuestion->userAnswers()->exists()) {
                 UserAnswer::create([
@@ -101,50 +149,75 @@ class QuizQuestion extends Component
         }
 
         $userQuiz->update(['is_completed' => true]);
-        
+
         return redirect()->route('quiz.results', $this->userQuizId);
     }
 
-    public function saveAnswer($selectedAnswer)
+    /**
+     * Simpan jawaban berdasarkan index.
+     * Index digunakan untuk mengambil teks asli dari data soal.
+     */
+    public function saveAnswer($answerIndex)
     {
-        if (!empty($selectedAnswer)) {
-            try {
-                $question = $this->getCurrentQuestion();
-                $answers = json_decode($question->answers, true);
-                $trimmedAnswer = trim($selectedAnswer);
-                $isCorrect = false;
+        if ($answerIndex === null || $answerIndex === '') return;
 
-                if (is_array($answers)) {
-                    foreach ($answers as $answer) {
-                        if (trim($answer['content'] ?? '') === $trimmedAnswer) {
-                            $isCorrect = $answer['is_correct'] ?? false;
-                            break;
-                        }
-                    }
-                }
+        $answerIndex = (int) $answerIndex;
 
-                UserAnswer::updateOrCreate(
-                    ['user_question_id' => $question->id],
-                    [
-                        'answer_content' => $trimmedAnswer,
-                        'is_correct' => $isCorrect
-                    ]
-                );
-            } catch (\Exception $e) {
-                Log::error('saveAnswer error: ' . $e->getMessage(), [
-                    'answer' => $selectedAnswer,
-                    'questionIndex' => $this->questionIndex,
-                ]);
-            }
+        try {
+            $questionId = $this->questionIds[$this->questionIndex];
+            $answers = $this->getAnswersForQuestion($questionId);
+
+            if (!isset($answers[$answerIndex])) return;
+
+            $answerContent = trim($answers[$answerIndex]['content']);
+            $isCorrect = (bool) ($answers[$answerIndex]['is_correct'] ?? false);
+
+            UserAnswer::updateOrCreate(
+                ['user_question_id' => $questionId],
+                [
+                    'answer_content' => $answerContent,
+                    'is_correct' => $isCorrect
+                ]
+            );
+
+            // Update tracking
+            $this->answeredQuestions[$this->questionIndex] = $answerIndex;
+            $this->selectedAnswerIndex = $answerIndex;
+
+        } catch (\Exception $e) {
+            Log::error('saveAnswer error: ' . $e->getMessage(), [
+                'answerIndex' => $answerIndex,
+                'questionIndex' => $this->questionIndex,
+            ]);
         }
     }
 
     /**
-     * Navigasi ke soal berikutnya (tanpa pindah URL).
+     * Navigasi ke soal tertentu berdasarkan index (untuk grid navigasi).
      */
-    public function nextQuestion($selectedAnswer = null)
+    public function goToQuestion($index, $currentAnswerIndex = null)
     {
-        $this->saveAnswer($selectedAnswer);
+        // Simpan jawaban soal saat ini terlebih dahulu
+        if ($currentAnswerIndex !== null && $currentAnswerIndex !== '') {
+            $this->saveAnswer($currentAnswerIndex);
+        }
+
+        $index = (int) $index;
+        if ($index >= 0 && $index < $this->totalQuestions) {
+            $this->questionIndex = $index;
+            $this->loadCurrentAnswer();
+            $this->dispatch('questionChanged');
+        }
+    }
+
+    /**
+     * Navigasi ke soal berikutnya.
+     */
+    public function nextQuestion($currentAnswerIndex = null)
+    {
+        if ($currentAnswerIndex !== null && $currentAnswerIndex !== '') {
+            $this->saveAnswer($currentAnswerIndex);
+        }
 
         if ($this->questionIndex + 1 < $this->totalQuestions) {
             $this->questionIndex++;
@@ -154,11 +227,13 @@ class QuizQuestion extends Component
     }
 
     /**
-     * Navigasi ke soal sebelumnya (tanpa pindah URL).
+     * Navigasi ke soal sebelumnya.
      */
-    public function previousQuestion($selectedAnswer = null)
+    public function previousQuestion($currentAnswerIndex = null)
     {
-        $this->saveAnswer($selectedAnswer);
+        if ($currentAnswerIndex !== null && $currentAnswerIndex !== '') {
+            $this->saveAnswer($currentAnswerIndex);
+        }
 
         if ($this->questionIndex > 0) {
             $this->questionIndex--;
@@ -170,9 +245,11 @@ class QuizQuestion extends Component
     /**
      * Submit jawaban terakhir dan selesaikan quiz.
      */
-    public function finishQuiz($selectedAnswer = null)
+    public function finishQuiz($currentAnswerIndex = null)
     {
-        $this->saveAnswer($selectedAnswer);
+        if ($currentAnswerIndex !== null && $currentAnswerIndex !== '') {
+            $this->saveAnswer($currentAnswerIndex);
+        }
 
         $userQuiz = UserQuiz::findOrFail($this->userQuizId);
         $userQuiz->update(['is_completed' => true]);
@@ -229,25 +306,23 @@ class QuizQuestion extends Component
 
     public function render()
     {
-        // Load question fresh dari DB setiap render (tidak disimpan sebagai property)
+        // Load question fresh dari DB setiap render
         $question = $this->getCurrentQuestion();
 
-        $answers = json_decode($question->answers, true);
-        if (is_array($answers)) {
-            $validAnswers = array_filter($answers, function($answer) {
-                return !empty($answer['content']) && strpos($answer['content'], '$$') === false;
-            });
-            $question->question->shuffled_answers = collect($validAnswers);
-        }
+        // Ambil jawaban TANPA modifikasi apapun
+        $questionId = $this->questionIds[$this->questionIndex];
+        $cleanAnswers = $this->getAnswersForQuestion($questionId);
 
         $userQuiz = UserQuiz::findOrFail($this->userQuizId);
 
         return view('livewire.quiz-question', [
             'question' => $question,
+            'cleanAnswers' => $cleanAnswers,
             'questionIndex' => $this->questionIndex,
             'totalQuestions' => $this->totalQuestions,
             'timeLeft' => $this->timeLeft,
             'violationCount' => $userQuiz->total_violations,
+            'answeredQuestions' => $this->answeredQuestions,
         ]);
     }
 }
