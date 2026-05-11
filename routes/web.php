@@ -22,6 +22,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/quiz/history', \App\Livewire\QuizHistory::class)->name('quiz.history');
     Route::get('/admin/student-quiz-history/{userId}', \App\Filament\Pages\StudentQuizHistory::class)
         ->name('filament.admin.pages.student-quiz-history');
+    Route::get('/questions/preview', \App\Livewire\QuestionPreviewer::class)->name('questions.preview');
 });
 
 Route::get('/', function () {
@@ -34,6 +35,8 @@ Route::get('/register/teacher', [RegisterController::class, 'showTeacherForm'])-
 Route::get('/register/mahasiswa', [RegisterController::class, 'showMahasiswaForm'])->name('register.mahasiswa');
 Route::get('/register/dosen', [RegisterController::class, 'showDosenForm'])->name('register.dosen');
 Route::get('/register/lecturer', [RegisterController::class, 'showLecturerForm'])->name('register.lecturer');
-Route::post('/register', [RegisterController::class, 'register'])->name('register.submit');
 
-Route::get('/questions/preview', \App\Livewire\QuestionPreviewer::class)->name('questions.preview');
+// Rate limiting: max 5 registrasi per menit per IP
+Route::middleware(['throttle:5,1'])->group(function () {
+    Route::post('/register', [RegisterController::class, 'register'])->name('register.submit');
+});

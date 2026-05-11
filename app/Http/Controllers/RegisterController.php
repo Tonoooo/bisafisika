@@ -51,7 +51,7 @@ class RegisterController extends Controller
                 'exists:schools,id',
                 'nullable',
             ],
-            'role' => ['required', Rule::in(['siswa', 'guru', 'super_admin', 'mahasiswa', 'dosen'])],
+            'role' => ['required', Rule::in(['siswa', 'guru', 'mahasiswa', 'dosen'])],
             'level' => ['required_if:role,siswa,mahasiswa', 'nullable'],
             'class' => ['required_if:role,siswa,mahasiswa', 'regex:/^[a-zA-Z]$/', 'nullable'],
         ]);

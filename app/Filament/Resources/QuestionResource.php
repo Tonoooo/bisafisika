@@ -192,8 +192,10 @@ class QuestionResource extends Resource
                 Forms\Components\FileUpload::make('image_path')
                     ->label('Image')
                     ->directory('questions')
-                    ->disk('public') 
-                    ->visibility('public') 
+                    ->disk('public')
+                    ->visibility('public')
+                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/gif', 'image/webp'])
+                    ->maxSize(5120) // Max 5MB
                     ->nullable(),
             ]);
     }
